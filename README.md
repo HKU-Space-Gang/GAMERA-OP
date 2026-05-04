@@ -1,0 +1,78 @@
+# GAMERA-OP (Orthogonal-Plus)
+
+## Introduction
+
+GAMERA-OP (Orthogonal Plus) is a three-dimensional finite-volume magnetohydrodynamics (MHD) solver designed for orthogonal curvilinear geometries. 
+It serves as the successor to the LFM (Lyon–Fedder–Mobarry) and GAMERA codes, re-designed in the C language to emphasize improved numerics, 
+modularity, high performance, and scalability for applications in space physics and astrophysical research.
+
+This public release supports Cartesian and Spherical coordinates and includes a suite of standard benchmarks, 
+such as the Orszag–Tang vortex, magnetic field loop advection, and blast wave tests. Its modular architecture allows 
+researchers to easily implement new coordinates and physical configurations by leveraging the provided template structures.
+
+## Requirements
+
+GCC, MPI, OpenMP, HDF5, and CMake are required.
+
+## Compilation
+
+To compile the project, use the following commands:
+
+```bash
+mkdir build && cd build
+
+# -DCOORD_TYPE=0 : Cartesian geometry
+# -DCOORD_TYPE=2 : Spherical geometry
+
+# -DPROBLEM=1 : Orszag–Tang test (Cartesian)
+# -DPROBLEM=2 : Field loop test (Cartesian)
+# -DPROBLEM=3 : Field loop test (Spherical)
+# -DPROBLEM=4 : Blast wave test (Cartesian)
+# -DPROBLEM=5 : Blast wave test (Spherical)
+
+cmake -DCMAKE_BUILD_TYPE=Release -DCOORD_TYPE=2 -DPROBLEM=3 ..
+make
+```
+
+## Execution
+Create a script named run.sh with the following content, and execute it using ./run.sh.
+
+```bash
+#!/bin/bash
+
+# Set the number of OpenMP threads
+export OMP_NUM_THREADS=1
+
+# Set the number of MPI processes
+# Make sure the number of MPI processes equals the total number of subdomains defined in the config.yaml 
+# (e.g., proc_dims_i x proc_dims_j x proc_dims_k = MPI processes)
+mpirun -n 4 ./run_mhd config.yaml
+```
+
+A sample configuration file named `config.yaml` is provided in the `scripts/` directory.
+
+## Data Processing
+
+GAMERA-OP outputs data in a rank-specific and time-step-specific manner. Each MPI rank writes its own subdomain data to a separate HDF5 file. The naming convention follows the pattern:
+```
+mhd_XX-YY-ZZ_NNNNNN.h5
+```
+
+where:
+- `XX-YY-ZZ` : MPI rank index in the (x, y, z) decomposition (e.g., `00-00-00` for rank (0,0,0))
+- `NNNNNN`   : Output step number, zero-padded to 6 digits (e.g., `000000`, `000001`, `000002`, ...)
+
+**Examples:**
+- `mhd_00-00-00_000000.h5` – Rank (0,0,0), first output (step 0)
+- `mhd_00-00-00_000001.h5` – Rank (0,0,0), second output (step 1)
+- `mhd_01-00-00_000000.h5` – Rank (1,0,0), first output (step 0)
+
+This per-rank, per-step output strategy facilitates parallel I/O and simplifies post-processing for distributed memory simulations. 
+However, it also requires post-processing tools to combine or analyze the partitioned data.
+
+A MATLAB script is provided in the `scripts/` directory to handle the rank-split output files. 
+The script reads all HDF5 files for a given output step, combines them into a full 3D field, and saves the results in a more convenient hdf5 format for analysis and visualization.
+
+
+
+

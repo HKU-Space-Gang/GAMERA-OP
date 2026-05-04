@@ -1,0 +1,30 @@
+# --- 系统相关 (必选) ---
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# --- 编辑器相关 (必选) ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- 编译与临时文件 (针对 C++/Fortran/Python) ---
+# *.o
+# *.mod
+# *.out
+# *.exe
+# __pycache__/
+# *.pyc
+
+# --- 模拟数据与日志 (按需取消注释) ---
+# 如果你的模拟生成了巨大的数据文件，千万别传 GitHub
+# *.dat
+# *.hdf5
+# *.vtr
+# *.log
+
+# --- MATLAB 相关 ---
+# *.asv
+# *.mat

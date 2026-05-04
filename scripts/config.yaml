@@ -1,0 +1,26 @@
+# number of active grid points in global domain
+ni_global: 128
+nj_global: 128
+nk_global: 128
+# number of processes in each dimension
+proc_dims_i: 2
+proc_dims_j: 2
+proc_dims_k: 1
+# number of time steps
+Nt: 20000000
+# stop time, if you want to use this parameter, make sure Nt is small
+time_stop: 1000
+# time out
+output_interval: 2.5
+# Unit normalization
+# x_Norm: length normalization, the unit is 'm'
+# u_Norm: velocity normalization, the unit is 'm/s'
+# Time_Norm: time normalization, the unit is 's'
+# rho_Norm: density normalization, the unit is 'kg/m^3', which is equal to 1amu/cc here.
+# p_Norm: pressure normalization, the unit is 'Pa'
+# B_Norm: magnetic field normalization, the unit is 'T'
+# Note: Only need to write basic units: x_Norm, u_Norm, rho_Norm
+x_Norm: 1.0
+u_Norm: 1.0
+rho_Norm: 1.0
+
