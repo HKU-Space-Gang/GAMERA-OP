@@ -1,5 +1,36 @@
 # GAMERA-OP (Orthogonal-Plus)
 
+## Publication
+
+The algorithms, numerical methods, and verification tests underlying GAMERA-OP are described in the following open-access paper:
+
+> H. Luo, B. Zhang, J. Tian, J. Cai, J. Chen, E. Feng, Z. Zheng, S. Xi, and J. G. Lyon, “GAMERA-OP: A Three-dimensional Finite-volume Magnetohydrodynamic Solver for Orthogonal Curvilinear Geometries,” *The Astrophysical Journal Supplement Series*, **285**(1), 15 (2026).
+>
+> [Open-access article](https://doi.org/10.3847/1538-4365/ae7344)
+
+If you use GAMERA-OP in your research, please cite this paper.
+
+<details>
+<summary>BibTeX</summary>
+
+```bibtex
+@article{Luo2026GAMERAOP,
+  author    = {Luo, Hongyang and Zhang, Binzheng and Tian, Jiaxing and Cai, Jinshu and Chen, Junjie and Feng, Enhao and Zheng, Zhiqi and Xi, Sheng and Lyon, John G.},
+  title     = {{GAMERA-OP}: A Three-dimensional Finite-volume Magnetohydrodynamic Solver for Orthogonal Curvilinear Geometries},
+  journal   = {The Astrophysical Journal Supplement Series},
+  year      = {2026},
+  month     = jun,
+  volume    = {285},
+  number    = {1},
+  pages     = {15},
+  publisher = {The American Astronomical Society},
+  doi       = {10.3847/1538-4365/ae7344},
+  url       = {https://doi.org/10.3847/1538-4365/ae7344}
+}
+```
+
+</details>
+
 ## Introduction
 
 GAMERA-OP (Orthogonal Plus) is a three-dimensional finite-volume magnetohydrodynamics (MHD) solver designed for orthogonal curvilinear geometries. 
@@ -72,7 +103,6 @@ However, it also requires post-processing tools to combine or analyze the partit
 
 A MATLAB script is provided in the `scripts/` directory to handle the rank-split output files. 
 The script reads all HDF5 files for a given output step, combines them into a full 3D field, and saves the results in a more convenient hdf5 format for analysis and visualization.
-
 
 
 

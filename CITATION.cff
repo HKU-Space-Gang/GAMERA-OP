@@ -1,0 +1,57 @@
+cff-version: 1.2.0
+message: "If you use GAMERA-OP in your research, please cite the paper below."
+title: "GAMERA-OP (Orthogonal-Plus)"
+type: software
+authors:
+  - family-names: Luo
+    given-names: Hongyang
+    orcid: "https://orcid.org/0009-0004-5893-7936"
+  - family-names: Zhang
+    given-names: Binzheng
+  - family-names: Tian
+    given-names: Jiaxing
+  - family-names: Cai
+    given-names: Jinshu
+  - family-names: Chen
+    given-names: Junjie
+    orcid: "https://orcid.org/0000-0003-3774-9480"
+  - family-names: Feng
+    given-names: Enhao
+  - family-names: Zheng
+    given-names: Zhiqi
+  - family-names: Xi
+    given-names: Sheng
+  - family-names: Lyon
+    given-names: John G.
+repository-code: "https://github.com/HKU-Space-Gang/GAMERA-OP"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Luo
+      given-names: Hongyang
+      orcid: "https://orcid.org/0009-0004-5893-7936"
+    - family-names: Zhang
+      given-names: Binzheng
+    - family-names: Tian
+      given-names: Jiaxing
+    - family-names: Cai
+      given-names: Jinshu
+    - family-names: Chen
+      given-names: Junjie
+      orcid: "https://orcid.org/0000-0003-3774-9480"
+    - family-names: Feng
+      given-names: Enhao
+    - family-names: Zheng
+      given-names: Zhiqi
+    - family-names: Xi
+      given-names: Sheng
+    - family-names: Lyon
+      given-names: John G.
+  title: "GAMERA-OP: A Three-dimensional Finite-volume Magnetohydrodynamic Solver for Orthogonal Curvilinear Geometries"
+  journal: "The Astrophysical Journal Supplement Series"
+  year: 2026
+  month: 6
+  volume: 285
+  issue: 1
+  start: 15
+  doi: "10.3847/1538-4365/ae7344"
