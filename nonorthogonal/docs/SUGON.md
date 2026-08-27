@@ -112,7 +112,11 @@ coordinate conventions are specified in
 ## 5. What may be changed for a science run
 
 Make a copy of `config.yaml` in a new run directory and record every change.
-Solar-wind history and runtime are normal science inputs. Do not change the
+Solar-wind history and runtime are normal science inputs. Use
+[Solar-wind input](SOLAR_WIND.md) to construct and validate either an
+idealized schedule or an observed event before submission. It includes the
+exact HDF5 schema, native coordinates, physical units, time alignment,
+propagation reference and event quality-control checklist. Do not change the
 radial map, Yin-Yang interface, sparse-overset or MI solver build switches in
 an A/B science comparison unless the numerical change itself is the research
 question.

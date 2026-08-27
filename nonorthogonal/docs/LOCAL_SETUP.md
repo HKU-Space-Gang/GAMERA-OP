@@ -100,7 +100,16 @@ that the solar-wind reader and complete MI/precipitation/conductance path are
 exercised immediately. It is an installation test, not a converged
 magnetosphere simulation.
 
-## 6. Choose the next grid
+## 6. Configure the solar wind
+
+The supplied smoke case uses the checked-in idealized solar-wind file. Before
+creating a new idealized schedule or an observed-event input, follow
+[Solar-wind input](SOLAR_WIND.md). It defines the required HDF5 datasets,
+physical units, model-native signs, time-offset conversion and event-data
+quality checks. In particular, native inflow has positive `Vx`, `/P` is
+thermal rather than dynamic pressure, and `wind_time_offset` is in code time.
+
+## 7. Choose the next grid
 
 The local command deliberately defaults to `32x12x32x2`, not the medium 72
 grid. After it passes, use [Grid and MPI options](GRID_OPTIONS.md) to choose
@@ -110,7 +119,7 @@ decomposition, total ranks, derived MI grid and allowed purpose of each.
 
 Do not use a long 32-grid smoke result for physical interpretation.
 
-## 7. Read and plot production output
+## 8. Read and plot production output
 
 Before analyzing a cluster result, read the
 [Yin-Yang output data model](OUTPUT_DATA_MODEL.md). The compact production
@@ -122,7 +131,7 @@ magnetosphere frames, embedded North/South FAC and potential, MHD/MI time
 series, full MI snapshots and H.264 movie. The local smoke run intentionally
 does not create compact MHD plotting files when it is built with serial HDF5.
 
-## 8. Common failures
+## 9. Common failures
 
 ### CMake found serial HDF5
 

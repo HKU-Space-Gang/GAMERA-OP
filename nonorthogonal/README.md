@@ -37,9 +37,10 @@ If this is your first time using the code:
 1. Follow [Local setup](docs/LOCAL_SETUP.md).
 2. Build the code and run the two-rank smoke example.
 3. Choose a supported [grid and MPI preset](docs/GRID_OPTIONS.md).
-4. Read the [Yin-Yang output data model](docs/OUTPUT_DATA_MODEL.md).
-5. Learn the [standard diagnostics and movie workflow](docs/DIAGNOSTICS.md).
-6. Only then use the [Sugon 128-resolution example](docs/SUGON.md).
+4. Configure an [idealized or observed-event solar-wind input](docs/SOLAR_WIND.md).
+5. Read the [Yin-Yang output data model](docs/OUTPUT_DATA_MODEL.md).
+6. Learn the [standard diagnostics and movie workflow](docs/DIAGNOSTICS.md).
+7. Only then use the [Sugon 128-resolution example](docs/SUGON.md).
 
 The local smoke run verifies installation and the complete coupling path. Its
 32x12x32 grid and 20-second duration are not suitable for scientific analysis.
@@ -178,7 +179,9 @@ For a comparable production study, keep these compile-time choices fixed:
 Solar-wind history, run duration, output cadence and physically motivated MI
 parameters are YAML inputs. Change one physical assumption at a time, record
 the changed YAML in the run directory, and keep the automatically generated
-hash receipts.
+hash receipts. The [solar-wind input guide](docs/SOLAR_WIND.md) gives the exact
+HDF5 schema, native coordinate convention, idealized-file example, event-time
+alignment, propagation settings and validation checklist.
 
 See [production provenance](docs/PRODUCTION_PROVENANCE.md) for the exact
 accepted binary and run evidence.
