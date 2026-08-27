@@ -50,6 +50,15 @@ maintained in [`nonorthogonal/`](nonorthogonal/README.md). New users should
 start with its local two-rank smoke example before using the 256-rank Sugon
 example.
 
+Student entry points:
+
+- [Production-model overview](nonorthogonal/README.md)
+- [Local installation and first-run guide](nonorthogonal/docs/LOCAL_SETUP.md)
+- [Local two-rank example and scripts](nonorthogonal/examples/earth_magnetosphere/local_smoke/)
+- [Sugon setup and production-run guide](nonorthogonal/docs/SUGON.md)
+- [Sugon 256-rank example and Slurm scripts](nonorthogonal/examples/earth_magnetosphere/sugon_128/)
+- [Accepted production provenance](nonorthogonal/docs/PRODUCTION_PROVENANCE.md)
+
 ## Requirements
 
 GCC, MPI, OpenMP, HDF5, and CMake are required.
@@ -112,5 +121,4 @@ However, it also requires post-processing tools to combine or analyze the partit
 
 A MATLAB script is provided in the `scripts/` directory to handle the rank-split output files. 
 The script reads all HDF5 files for a given output step, combines them into a full 3D field, and saves the results in a more convenient hdf5 format for analysis and visualization.
-
 
