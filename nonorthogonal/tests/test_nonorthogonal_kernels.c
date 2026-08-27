@@ -579,7 +579,7 @@ static void test_fortran_state_gold(void) {
   }
 }
 
-static void test_nuclear_hogs(void) {
+static void test_emergency_interface_diffusion(void) {
   gamera_no_fluid_flux fluid = {0};
   const gamera_no_primitive interface[2] = {
       {1.0, {{15.0, 0.0, 0.0}}, 1.0},
@@ -587,23 +587,26 @@ static void test_nuclear_hogs(void) {
   const double lower[GAMERA_NO_FLUX_COUNT] = {1.0, 2.0, 3.0, 4.0, 5.0};
   const double upper[GAMERA_NO_FLUX_COUNT] = {1.5, 3.0, 2.0, 4.5, 7.0};
   bool applied = false;
-  if (gamera_no_apply_nuclear_hogs(&fluid, interface, lower, upper, true,
-                                   10.0, &applied) != 0 || !applied) {
-    fprintf(stderr, "FAIL Kaiju nuclear HOGS did not trigger\n");
+  if (gamera_no_apply_emergency_interface_diffusion(
+          &fluid, interface, lower, upper, true, 10.0, &applied) != 0 ||
+      !applied) {
+    fprintf(stderr, "FAIL emergency interface diffusion did not trigger\n");
     ++failures;
     return;
   }
   for (int variable = 0; variable < GAMERA_NO_FLUX_COUNT; ++variable) {
-    expect_near("Kaiju nuclear HOGS flux", fluid.conserved[variable],
+    expect_near("emergency interface diffusion flux",
+                fluid.conserved[variable],
                 -10.0 * (upper[variable] - lower[variable]), 1.0e-15);
   }
   gamera_no_fluid_flux quiet = {0};
   gamera_no_primitive slow[2] = {interface[0], interface[1]};
   slow[0].velocity.value[0] = 14.9;
   slow[1].velocity.value[0] = 14.9;
-  if (gamera_no_apply_nuclear_hogs(&quiet, slow, lower, upper, true, 10.0,
-                                   &applied) != 0 || applied) {
-    fprintf(stderr, "FAIL Kaiju nuclear HOGS sub-threshold behavior\n");
+  if (gamera_no_apply_emergency_interface_diffusion(
+          &quiet, slow, lower, upper, true, 10.0, &applied) != 0 ||
+      applied) {
+    fprintf(stderr, "FAIL emergency diffusion sub-threshold behavior\n");
     ++failures;
   }
 }
@@ -1259,7 +1262,7 @@ static void test_inner_wall_mass_energy_flux_trap(void) {
   gamera_no_storage_destroy(&storage);
 }
 
-static void test_kaiju_chillout(void) {
+static void test_pressure_control(void) {
   const size_t extent[3] = {1U, 1U, 1U};
   const size_t vertex_extent[3] = {2U, 2U, 2U};
   gamera_no_vec3 vertices[8];
@@ -1275,7 +1278,7 @@ static void test_kaiju_chillout(void) {
   gamera_no_storage storage = {0};
   if (gamera_no_grid_create(extent, vertices, &grid) != 0 ||
       gamera_no_storage_create(extent, &storage) != 0) {
-    fprintf(stderr, "FAIL Kaiju ChillOut setup returned an error\n");
+    fprintf(stderr, "FAIL pressure-control setup returned an error\n");
     ++failures;
     gamera_no_storage_destroy(&storage);
     gamera_no_grid_destroy(&grid);
@@ -1292,11 +1295,11 @@ static void test_kaiju_chillout(void) {
   double max_p = 0.0;
   const size_t lower[3] = {0U, 0U, 0U};
   const size_t upper[3] = {1U, 1U, 1U};
-  if (gamera_no_apply_kaiju_chillout(
+  if (gamera_no_apply_pressure_control(
           &storage, &grid, lower, upper, dt_test, gamma, 1.0e-6,
           1.0e-8, 10.0, 1.0e-3, 1.0e-7, &low_count, &hot_count,
           &max_cs, &max_p) != 0) {
-    fprintf(stderr, "FAIL Kaiju ChillOut returned an error\n");
+    fprintf(stderr, "FAIL pressure control returned an error\n");
     ++failures;
   } else {
     gamera_no_primitive cooled;
@@ -1309,16 +1312,16 @@ static void test_kaiju_chillout(void) {
     const double target = hot.density * 15.0 * 15.0 / gamma;
     const double expected =
         hot.pressure - dt_test * sound / dipole_l * (hot.pressure - target);
-    expect_near("Kaiju ChillOut hot pressure", cooled.pressure, expected,
+    expect_near("pressure-control hot pressure", cooled.pressure, expected,
                 2.0e-12);
     if (low_count != 0U || hot_count != 1U) {
       fprintf(stderr,
-              "FAIL Kaiju ChillOut counts low/hot=%zu/%zu expected=0/1\n",
+              "FAIL pressure-control counts low/hot=%zu/%zu expected=0/1\n",
               low_count, hot_count);
       ++failures;
     }
-    expect_near("Kaiju ChillOut maximum sound", max_cs, sound, 2.0e-12);
-    expect_near("Kaiju ChillOut maximum pressure", max_p, hot.pressure,
+    expect_near("pressure-control maximum sound", max_cs, sound, 2.0e-12);
+    expect_near("pressure-control maximum pressure", max_p, hot.pressure,
                 2.0e-12);
   }
 
@@ -1326,21 +1329,22 @@ static void test_kaiju_chillout(void) {
       {1.0e-4, {{0.0, 0.0, 0.0}}, 1.0};
   (void)gamera_no_primitive_to_conserved(
       &tenuous, gamma, 1.0e-6, 1.0e-8, storage.conserved);
-  if (gamera_no_apply_kaiju_chillout(
+  if (gamera_no_apply_pressure_control(
           &storage, &grid, lower, upper, dt_test, gamma, 1.0e-6,
           1.0e-8, 10.0, 1.0e-3, 1.0e-7, &low_count, &hot_count,
           &max_cs, &max_p) != 0) {
-    fprintf(stderr, "FAIL Kaiju low-density ChillOut returned an error\n");
+    fprintf(stderr, "FAIL low-density pressure control returned an error\n");
     ++failures;
   } else {
     gamera_no_primitive cooled;
     (void)gamera_no_conserved_to_primitive(
         storage.conserved, gamma, 1.0e-6, 1.0e-8, &cooled);
-    expect_near("Kaiju low-density pressure", cooled.pressure, 1.0e-8,
+    expect_near("low-density controlled pressure", cooled.pressure, 1.0e-8,
                 1.0e-15);
     if (low_count != 1U) {
       fprintf(stderr,
-              "FAIL Kaiju low-density count=%zu expected=1\n", low_count);
+              "FAIL low-density pressure-control count=%zu expected=1\n",
+              low_count);
       ++failures;
     }
   }
@@ -1390,14 +1394,14 @@ int main(void) {
   test_edge_emf();
   test_reconstruction();
   test_fortran_flux_gold();
-  test_nuclear_hogs();
+  test_emergency_interface_diffusion();
   test_fortran_state_gold();
   test_grid_and_storage_layout();
   test_grid_level_ct_and_predictor();
   test_uniform_face_sweep();
   test_uniform_edge_emf_sweep();
   test_inner_wall_mass_energy_flux_trap();
-  test_kaiju_chillout();
+  test_pressure_control();
   test_yinyang_composite_owner();
   test_complete_uniform_advance();
 

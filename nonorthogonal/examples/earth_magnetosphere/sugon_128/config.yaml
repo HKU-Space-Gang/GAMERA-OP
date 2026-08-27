@@ -44,11 +44,11 @@ mi_maximum_iterations: 20000
 mi_relative_tolerance: 1.0e-10
 mi_absolute_tolerance: 1.0e-8
 
-# Fedder/Kaiju precipitation, Robinson auroral conductance and Hall-aware
+# Fedder-1995 precipitation, Robinson auroral conductance and Hall-aware
 # variable-conductance potential solve.
 mi_electron_precipitation_enabled: 1
 mi_electron_precipitation_hall_model: 2
-# Calibrated thermal number-flux coefficient: 2x the Kaiju/Fedder default
+# Calibrated thermal number-flux coefficient: 2x the Fedder-model baseline
 # 0.4362323.  At fixed MHD/FAC state this doubles F_N and F_E while leaving
 # characteristic energy unchanged; Robinson Sigma_P/H scale by sqrt(2).
 mi_electron_precipitation_beta: 0.8724646
@@ -56,7 +56,7 @@ mi_electron_precipitation_ramp_s: 600.0
 mi_electron_precipitation_conductance_feedback_enabled: 1
 mi_electron_precipitation_conductance_smoothing_s: 30.0
 
-# Exact Kaiju/LOMPE solar EUV, including its smooth twilight tail through
+# LOMPE solar EUV, including its smooth twilight tail through
 # SZA=120 degrees; medium solar activity.  The independent Pedersen floor
 # below is not EUV.
 mi_euv_f107: 150.0

@@ -41,7 +41,7 @@ typedef struct {
   double velocity_norm;
   double pressure_norm;
   double magnetic_norm;
-  /* Multiplier taking the input velocity to m/s (1 for Kaiju files). */
+  /* Multiplier taking the input velocity to m/s (1 for m/s, 1000 for km/s). */
   double velocity_si_scale;
 } gamera_solar_wind_hdf5_units;
 
@@ -65,7 +65,7 @@ int gamera_solar_wind_sample_time(const gamera_solar_wind_series *series,
                                   gamera_solar_wind_state *state);
 
 /*
- * Lyon et al. (2004), section 5.1 / Kaiju wind.F90 ballistic mapping.
+ * Lyon et al. (2004), section 5.1 planar-front ballistic mapping.
  * The current monitor Vx defines a single-valued front velocity, then the
  * monitor is sampled at time - dot(x-x_ref,v_front)/|v_front|^2.
  */
@@ -75,7 +75,7 @@ int gamera_solar_wind_sample_at(const gamera_solar_wind_series *series,
                                 gamera_solar_wind_state *state,
                                 double *delay);
 
-/* Kaiju's smooth upstream-hemisphere-to-tail boundary weight. */
+/* Smooth upstream-hemisphere-to-tail boundary weight. */
 int gamera_solar_wind_weight(const gamera_solar_wind_series *series,
                              const double point[GAMERA_WIND_DIM],
                              double simulation_time, double *weight);

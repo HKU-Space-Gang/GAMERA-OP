@@ -17,7 +17,7 @@ static int finite_state(const gamera_solar_wind_state *state) {
       return 0;
     }
   }
-  /* The Lyon/Kaiju propagation map is singular when the monitor Vx is zero. */
+  /* The planar-front propagation map is singular when monitor Vx is zero. */
   return fabs(state->velocity[GAMERA_WIND_X]) > DBL_MIN;
 }
 

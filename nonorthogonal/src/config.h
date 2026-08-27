@@ -95,7 +95,7 @@ extern Norm_t norm_config;
 typedef struct {
   int enabled;
   char file[GAMERA_WIND_PATH_MAX];
-  /* 0: already normalized code units; 1: Kaiju/space-weather physical units. */
+  /* 0: already normalized code units; 1: space-weather physical units. */
   int physical_units;
   int linear_interpolation;
   double velocity_si_scale;

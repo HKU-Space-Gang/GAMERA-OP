@@ -1,10 +1,11 @@
 # Production provenance
 
-This release was extracted from the accepted source snapshot for the Sugon
-five-hour Bz=-5 nT production run. Numerical source files are preserved from
-that snapshot; packaging changes are limited to documentation, examples,
-scripts, exclusion of unfinished research modules, and a CMake fail-fast guard
-for those excluded modules.
+This release is numerically equivalent to the accepted source snapshot for the
+Sugon five-hour Bz=-5 nT production run. Equations, constants, control flow and
+production defaults are preserved. Public identifiers, comments, log labels
+and test labels were normalized for this standalone GAMERA-OP release;
+packaging also adds documentation, examples, scripts and a CMake fail-fast
+guard while excluding unfinished research modules.
 
 ## Accepted run
 
@@ -22,11 +23,16 @@ for those excluded modules.
 - final `max_divB_total`: 1.2725e-09
 - complete `checkpoint_000005`: 256 rank files
 
-The accepted executable SHA-256 was:
+The historical accepted-run executable SHA-256 was:
 
 ```text
 86eee1e7fd7b2cbf509abd28eabde16afa88b3a6fb358c059c15181c3347b25b
 ```
+
+This hash identifies the executable used for job `27542153`. A newly compiled
+public-release executable has a different byte hash because public symbols and
+log strings were renamed; regression tests verify the unchanged numerical
+behavior. Current release source hashes are recorded in `SOURCE_SHA256SUMS`.
 
 ## Performance gates
 
@@ -55,7 +61,7 @@ physical-time matching rather than raw filename counts.
 
 - `COORD_TYPE=3`, `PROBLEM=22`
 - inner radius 2.5 RE, outer radius 200 RE, radial map version 4
-- strict Kaiju gas and magnetic walls ON
+- strict production gas and magnetic inner walls ON
 - MFE Yin-Yang interface ON
 - sparse Yin-Yang overset ON, sparse profiling OFF
 - H(div) reconciliation OFF

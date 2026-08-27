@@ -16,10 +16,10 @@ magnetosphere path needed by a user:
 - dipole/background-field treatment and the accepted MFE Yin-Yang interface;
 - sparse Yin-Yang overset communication;
 - electrostatic magnetosphere-ionosphere coupling;
-- Fedder/Kaiju electron precipitation with beta 0.8724646;
+- Fedder-1995 electron precipitation with beta 0.8724646;
 - the accepted Zhang-offset hybrid diffuse-precipitation boundary;
 - Robinson auroral conductance;
-- Kaiju/LOMPE F10.7 EUV conductance, using the model-native Earth-to-Sun
+- LOMPE F10.7 EUV conductance, using the model-native Earth-to-Sun
   direction (-1, 0, 0) and the q'(SZA) twilight tail through 120 degrees;
 - an independent 2 S minimum on total Pedersen conductance;
 - Hall-aware cached-tensor BiCGStab/SSOR MI potential solves;
@@ -170,7 +170,7 @@ comparisons.
 For a comparable production study, keep these compile-time choices fixed:
 
 - `COORD_TYPE=3`, `PROBLEM=22`;
-- strict Kaiju magnetic and gas walls ON;
+- strict production magnetic and gas inner walls ON;
 - MFE interface ON;
 - sparse Yin-Yang overset ON and profiling OFF;
 - H(div) reconciliation OFF;

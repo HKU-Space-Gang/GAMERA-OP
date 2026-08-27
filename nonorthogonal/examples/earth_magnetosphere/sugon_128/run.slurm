@@ -51,8 +51,8 @@ export HDF5_USE_FILE_LOCKING=FALSE
   echo "mi_grid=384x43_per_hemisphere"
   echo "mi_solver=cached_conductance_tensor_BiCGStab_SSOR"
   echo "yinyang_sparse_overset=ON_profile=OFF"
-  echo "precipitation=Fedder_Kaiju_beta_0.8724646"
-  echo "euv=Kaiju_LOMPE_F10.7_150_twilight_tail_to_SZA_120"
+  echo "precipitation=Fedder_1995_beta_0.8724646"
+  echo "euv=LOMPE_F10.7_150_twilight_tail_to_SZA_120"
   echo "sunward_direction=(-1,0,0)_Earth_to_Sun"
   echo "mfe=ON_hdiv=OFF_ring_current=OFF"
   sha256sum "$run_root/run_mhd" config.yaml upstream_zero_then_minus5.h5

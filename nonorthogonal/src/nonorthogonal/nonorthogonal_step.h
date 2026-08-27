@@ -14,16 +14,16 @@ double gamera_no_cell_net_flux(const gamera_no_storage *storage, size_t i,
                                size_t j, size_t k);
 
 /*
- * Kaiju earthcmi.F90:IonFlux hard-wall guard.  At the inner radial face,
- * prevent the numerical reconstruction from injecting mass and positive
- * energy into the active domain.  Momentum and Maxwell fluxes are untouched.
+ * Inner radial hard-wall guard: prevent numerical reconstruction from
+ * injecting mass and positive energy into the active domain. Momentum and
+ * Maxwell fluxes are untouched.
  */
 int gamera_no_trap_inner_outward_mass_energy_flux(
     gamera_no_storage *storage, const size_t active_lower[3],
     const size_t active_upper[3], size_t *clamped_face_count);
 
-/* Kaiju msphutils.F90:ChillOut pressure control for Boris magnetospheres. */
-int gamera_no_apply_kaiju_chillout(
+/* Pressure control for low-density, Boris-limited magnetospheres. */
+int gamera_no_apply_pressure_control(
     gamera_no_storage *storage, const gamera_no_grid *grid,
     const size_t active_lower[3], const size_t active_upper[3], double dt,
     double gamma, double density_floor, double pressure_floor,

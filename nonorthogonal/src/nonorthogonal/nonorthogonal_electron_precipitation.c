@@ -8,8 +8,7 @@ static const double PROTON_MASS_G = 1.67262192369e-24;
 static const double ELEMENTARY_CHARGE_C = 1.60217663e-19;
 static const double KEV_TO_ERG = 1.602176634e-9;
 
-/* q'(solar zenith angle) at one-degree spacing, copied from the current
- * Kaiju/REMIX LOMPE EUV implementation. */
+/* Published LOMPE q'(solar zenith angle) fit at one-degree spacing. */
 static const double LOMPE_QP[121] = {
     1.000000e+00, 9.998500e-01, 9.994000e-01, 9.986500e-01,
     9.976000e-01, 9.962510e-01, 9.946030e-01, 9.926570e-01,
@@ -80,7 +79,7 @@ int gamera_mi_lompe_euv_conductance(double solar_zenith_rad, double f107,
     qprime = 1.0;
   } else if (zenith_deg >=
              120.0 - 64.0 * DBL_EPSILON * fmax(1.0, zenith_deg)) {
-    /* This is the upper bound used by Kaiju's LOMPE InterpQP routine. */
+    /* The tabulated twilight fit terminates at 120 degrees. */
     qprime = 0.0;
   } else {
     const size_t lower = (size_t)floor(zenith_deg);
@@ -153,7 +152,7 @@ double gamera_mi_robinson_hall(double average_energy_kev,
   if (model == GAMERA_MI_HALL_ROBINSON_1987) {
     return 0.45 * pedersen_siemens * pow(average_energy_kev, 0.85);
   }
-  if (model == GAMERA_MI_HALL_KAIJU_FEDDER_CAP) {
+  if (model == GAMERA_MI_HALL_ROBINSON_ENERGY_CAP) {
     return 0.45 * pedersen_siemens * pow(average_energy_kev, 0.85) /
            (1.0 + 0.0025 * average_energy_kev * average_energy_kev);
   }

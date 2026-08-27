@@ -1064,31 +1064,32 @@ int solve_nonorthogonal(int maximum_steps) {
       return -1;
     }
 #ifdef GAMERA_EARTH_DIPOLE_BACKGROUND
-    size_t chilled_low_density = 0U;
-    size_t chilled_high_sound = 0U;
-    double chillout_maximum_sound = 0.0;
-    double chillout_maximum_pressure = 0.0;
-    if (gamera_no_apply_kaiju_chillout(
+    size_t controlled_low_density = 0U;
+    size_t controlled_high_sound = 0U;
+    double pressure_control_maximum_sound = 0.0;
+    double pressure_control_maximum_pressure = 0.0;
+    if (gamera_no_apply_pressure_control(
             storage, grid, active_lower, active_upper, dt, gamma_val,
             rho_floor, p_floor, CA, 1.0e-3,
-            1.0e-2 / norm_config.u_Norm, &chilled_low_density,
-            &chilled_high_sound, &chillout_maximum_sound,
-            &chillout_maximum_pressure) != 0) {
-      log_error("Kaiju ChillOut failed at step %d", step);
+            1.0e-2 / norm_config.u_Norm, &controlled_low_density,
+            &controlled_high_sound, &pressure_control_maximum_sound,
+            &pressure_control_maximum_pressure) != 0) {
+      log_error("Magnetosphere pressure control failed at step %d", step);
       return -1;
     }
-    if (chilled_low_density > 0U || chilled_high_sound > 0U) {
-      log_info("Kaiju ChillOut rank %d: low-density=%zu high-sound=%zu "
+    if (controlled_low_density > 0U || controlled_high_sound > 0U) {
+      log_info("Pressure control rank %d: low-density=%zu high-sound=%zu "
                "pre-cooling max cs=%.6g pressure=%.6g code",
-               rank, chilled_low_density, chilled_high_sound,
-               chillout_maximum_sound, chillout_maximum_pressure);
+               rank, controlled_low_density, controlled_high_sound,
+               pressure_control_maximum_sound,
+               pressure_control_maximum_pressure);
     }
 #endif
-    if (storage->nuclear_hogs_face_count > 0U) {
-      log_info("Kaiju nuclear HOGS rank %d: faces=%zu max interface "
-               "speed=%.6g code (threshold=%.6g)",
-               rank, storage->nuclear_hogs_face_count,
-               storage->nuclear_hogs_max_interface_speed, 1.5 * CA);
+    if (storage->emergency_diffusion_face_count > 0U) {
+      log_info("Emergency interface diffusion rank %d: faces=%zu max "
+               "interface speed=%.6g code (threshold=%.6g)",
+               rank, storage->emergency_diffusion_face_count,
+               storage->emergency_diffusion_max_interface_speed, 1.5 * CA);
     }
 #ifdef GAMERA_NONORTHOGONAL_HAS_FLUID_FLUX_BOUNDARY
     for (int hemisphere = 0; hemisphere < 2; ++hemisphere) {

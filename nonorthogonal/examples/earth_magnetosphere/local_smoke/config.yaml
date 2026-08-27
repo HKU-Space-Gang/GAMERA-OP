@@ -50,7 +50,7 @@ mi_electron_precipitation_ramp_s: 600.0
 mi_electron_precipitation_conductance_feedback_enabled: 1
 mi_electron_precipitation_conductance_smoothing_s: 30.0
 
-# Kaiju/LOMPE q'(SZA) twilight tail through 120 degrees in model-native
+# LOMPE q'(SZA) twilight tail through 120 degrees in model-native
 # coordinates. Earth-to-Sun is -X.
 mi_euv_f107: 150.0
 mi_sunward_direction_x: -1.0

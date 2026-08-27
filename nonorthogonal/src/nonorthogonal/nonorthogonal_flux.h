@@ -55,7 +55,7 @@ int gamera_no_kinetic_maxwell_flux(
     double background_face_normal_field, bool use_boris, double light_speed,
     const double normal_velocity[2], gamera_no_maxwell_flux *flux);
 
-/* Apply the default Fortran HOGS terms. */
+/* Apply the default high-order gradient stabilization terms. */
 int gamera_no_apply_hogs(gamera_no_fluid_flux *fluid,
                          gamera_no_maxwell_flux *maxwell,
                          double hydro_coefficient,
@@ -63,10 +63,11 @@ int gamera_no_apply_hogs(gamera_no_fluid_flux *fluid,
                          double light_speed);
 
 /*
- * Kaiju stress.F90 doNuke: if the RMS reconstructed interface speed reaches
- * 1.5 times the Boris light speed, add c*(U_R-U_L) cell-centered diffusion.
+ * Emergency interface diffusion: if the RMS reconstructed interface speed
+ * reaches 1.5 times the Boris light speed, add c*(U_R-U_L) cell-centered
+ * diffusion.
  */
-int gamera_no_apply_nuclear_hogs(
+int gamera_no_apply_emergency_interface_diffusion(
     gamera_no_fluid_flux *fluid, const gamera_no_primitive interface[2],
     const double lower_cell[GAMERA_NO_FLUX_COUNT],
     const double upper_cell[GAMERA_NO_FLUX_COUNT], bool use_boris,

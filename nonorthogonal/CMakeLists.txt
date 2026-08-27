@@ -18,11 +18,11 @@ endif()
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
-option(GAMERA_STRICT_KAIJU_MAGNETIC_WALL
-       "Copy the first active-shell magnetic flux/Bxyz into every inner ghost as in Kaiju IonInner/IonPredFix"
+option(GAMERA_STRICT_INNER_MAGNETIC_WALL
+       "Copy first-active-shell magnetic flux and Cartesian B into every inner ghost"
        ON)
-option(GAMERA_STRICT_KAIJU_GAS_WALL
-       "Store Kaiju's wall velocity V_EB directly in every inner gas ghost"
+option(GAMERA_STRICT_INNER_GAS_WALL
+       "Store the prescribed wall drift velocity directly in every inner gas ghost"
        ON)
 option(GAMERA_YINYANG_MFE_INTERFACE
        "Use the experimental MFE-style ghost-only Yin-Yang MHD interface"
@@ -1297,13 +1297,13 @@ if(MPI_C_FOUND AND MPI_C_COMPILER)
                 nonorthogonal_online_restart_frontend_failstop
                 PROPERTIES TIMEOUT 60)
     endif()
-    if(GAMERA_STRICT_KAIJU_MAGNETIC_WALL)
+    if(GAMERA_STRICT_INNER_MAGNETIC_WALL)
         target_compile_definitions(${PROJECT_NAME} PRIVATE
-                GAMERA_STRICT_KAIJU_MAGNETIC_WALL)
+                GAMERA_STRICT_INNER_MAGNETIC_WALL)
     endif()
-    if(GAMERA_STRICT_KAIJU_GAS_WALL)
+    if(GAMERA_STRICT_INNER_GAS_WALL)
         target_compile_definitions(${PROJECT_NAME} PRIVATE
-                GAMERA_STRICT_KAIJU_GAS_WALL)
+                GAMERA_STRICT_INNER_GAS_WALL)
     endif()
     if(GAMERA_YINYANG_MFE_INTERFACE)
         # Experimental overset-interface mode: exchange primitive fluid states

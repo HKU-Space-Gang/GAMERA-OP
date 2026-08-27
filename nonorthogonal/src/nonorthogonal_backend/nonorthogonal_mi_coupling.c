@@ -2199,9 +2199,8 @@ int gamera_mi_coupling_ghost_velocity(gamera_no_vec3 point,
   for (int component = 0; component < GAMERA_NO_DIM; ++component) {
     drift.value[component] -= drift_radial * radial.value[component];
   }
-  /* Kaiju stores V_EB directly because its boundary object consumes a wall
-   * state.  GAMERA-OP's mirrored ghost reconstruction instead needs
-   * 2*V_EB-v_active to place V_EB at the physical wall. */
+  /* The mirrored ghost reconstruction needs 2*V_EB-v_active to place the
+   * prescribed E x B drift V_EB at the physical wall. */
   return gamera_mi_compose_ghost_velocity(source_velocity, background, drift,
                                           ghost_velocity);
 }

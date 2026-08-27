@@ -20,7 +20,7 @@ int gamera_no_generate_cartesian_vertices(
 typedef enum {
   /* Zhang et al. (2019), Equations (102)-(103): x and y warp together. */
   GAMERA_NO_WARP_PAPER = 1,
-  /* kaiju/src/gamera/init.F90: x += dsp and y -= dsp. */
+  /* Alternate legacy convention: x += dsp and y -= dsp. */
   GAMERA_NO_WARP_FORTRAN = -1
 } gamera_no_warp_convention;
 

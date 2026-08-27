@@ -15,8 +15,8 @@ enum {
 };
 
 /*
- * Kaiju GetShellJ finite-volume/Stokes current from a Cartesian residual B.
- * The target cell needs one magnetic-cell halo in every direction.
+ * Finite-volume/Stokes current from a Cartesian residual B. The target cell
+ * needs one magnetic-cell halo in every direction.
  */
 int gamera_no_cell_current_from_residual(
     const gamera_no_grid *grid, const gamera_no_vec3 *residual_magnetic,
@@ -90,7 +90,7 @@ int gamera_mi_solve_constant_pedersen(
  * operator is nonsymmetric and is solved with diagonally preconditioned
  * BiCGStab.  Constant SigmaP with SigmaH=0 is exactly the legacy
  * constant-Pedersen operator; nonzero Hall conductance retains the dipole
- * inclination metric used by REMIX.
+ * inclination metric used by the electrostatic ionosphere model.
  */
 int gamera_mi_apply_conductance_tensor(
     const gamera_mi_solver_config *config, const double *pedersen_siemens,

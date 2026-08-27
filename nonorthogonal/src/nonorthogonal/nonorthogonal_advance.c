@@ -101,8 +101,8 @@ int gamera_no_advance(
       (options->update.use_background && background == NULL)) {
     return -1;
   }
-  storage->nuclear_hogs_face_count = 0U;
-  storage->nuclear_hogs_max_interface_speed = 0.0;
+  storage->emergency_diffusion_face_count = 0U;
+  storage->emergency_diffusion_max_interface_speed = 0.0;
   for (int hemisphere = 0; hemisphere < 2; ++hemisphere) {
     storage->inner_wall_clamped_face_count[hemisphere] = 0U;
     storage->inner_wall_positive_mass_max[hemisphere] = 0.0;

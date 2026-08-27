@@ -203,7 +203,7 @@ int gamera_no_apply_hogs(gamera_no_fluid_flux *fluid,
   return 0;
 }
 
-int gamera_no_apply_nuclear_hogs(
+int gamera_no_apply_emergency_interface_diffusion(
     gamera_no_fluid_flux *fluid, const gamera_no_primitive interface[2],
     const double lower_cell[GAMERA_NO_FLUX_COUNT],
     const double upper_cell[GAMERA_NO_FLUX_COUNT], bool use_boris,

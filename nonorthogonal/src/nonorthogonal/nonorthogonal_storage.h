@@ -27,8 +27,8 @@ typedef struct {
   gamera_no_vec3 *maxwell_face_flux[3];
   double *hydro_rate;
   gamera_no_vec3 *maxwell_rate;
-  size_t nuclear_hogs_face_count;
-  double nuclear_hogs_max_interface_speed;
+  size_t emergency_diffusion_face_count;
+  double emergency_diffusion_max_interface_speed;
   size_t inner_wall_clamped_face_count[2];
   double inner_wall_positive_mass_max[2];
   double inner_wall_positive_energy_max[2];

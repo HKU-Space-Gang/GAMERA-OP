@@ -31,7 +31,7 @@ static int test_robinson_reference(void) {
   return EXIT_SUCCESS;
 }
 
-static int test_kaiju_fedder_reference(void) {
+static int test_fedder_reference(void) {
   gamera_mi_fedder95_config config = gamera_mi_fedder95_default_config();
   gamera_mi_electron_precipitation north;
   gamera_mi_electron_precipitation south;
@@ -116,7 +116,7 @@ static int test_drop_cap_and_hall_options(void) {
   const double legacy = gamera_mi_robinson_hall(
       30.0, 5.0, GAMERA_MI_HALL_ROBINSON_1987);
   const double capped = gamera_mi_robinson_hall(
-      30.0, 5.0, GAMERA_MI_HALL_KAIJU_FEDDER_CAP);
+      30.0, 5.0, GAMERA_MI_HALL_ROBINSON_ENERGY_CAP);
   const double kaeppler = gamera_mi_robinson_hall(
       30.0, 5.0, GAMERA_MI_HALL_KAEPPLER_2015);
   REQUIRE(legacy > capped);
@@ -219,7 +219,7 @@ static int test_mi_solar_zenith_mapping(void) {
 
 int main(void) {
   if (test_robinson_reference() != EXIT_SUCCESS ||
-      test_kaiju_fedder_reference() != EXIT_SUCCESS ||
+      test_fedder_reference() != EXIT_SUCCESS ||
       test_beta_scaling() != EXIT_SUCCESS ||
       test_drop_cap_and_hall_options() != EXIT_SUCCESS ||
       test_conductance_combination() != EXIT_SUCCESS ||

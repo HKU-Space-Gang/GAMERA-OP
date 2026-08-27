@@ -322,10 +322,10 @@ int gamera_no_sweep_face_fluxes(
   size_t face_upper[3] = {active_upper[0], active_upper[1], active_upper[2]};
   ++face_upper[direction];
   int failed = 0;
-  size_t nuclear_count = 0U;
-  double nuclear_maximum_speed = 0.0;
+  size_t emergency_count = 0U;
+  double emergency_maximum_speed = 0.0;
 #pragma omp parallel for collapse(3) reduction(| : failed) \
-    reduction(+ : nuclear_count) reduction(max : nuclear_maximum_speed) \
+    reduction(+ : emergency_count) reduction(max : emergency_maximum_speed) \
     schedule(static)
   for (size_t i = active_lower[0]; i < face_upper[0]; ++i) {
     for (size_t j = active_lower[1]; j < face_upper[1]; ++j) {
@@ -389,7 +389,7 @@ int gamera_no_sweep_face_fluxes(
                 grid->cell_extent, upper_coordinate[0], upper_coordinate[1],
                 upper_coordinate[2]);
             bool applied = false;
-            if (gamera_no_apply_nuclear_hogs(
+            if (gamera_no_apply_emergency_interface_diffusion(
                     &fluid, primitive,
                     &conserved[lower_cell * GAMERA_NO_FLUX_COUNT],
                     &conserved[upper_cell * GAMERA_NO_FLUX_COUNT], true,
@@ -407,9 +407,9 @@ int gamera_no_sweep_face_fluxes(
                   speed_square_sum += value * value;
                 }
               }
-              nuclear_maximum_speed =
-                  fmax(nuclear_maximum_speed, sqrt(0.5 * speed_square_sum));
-              ++nuclear_count;
+              emergency_maximum_speed =
+                  fmax(emergency_maximum_speed, sqrt(0.5 * speed_square_sum));
+              ++emergency_count;
             }
           }
         }
@@ -427,10 +427,10 @@ int gamera_no_sweep_face_fluxes(
       }
     }
   }
-  storage->nuclear_hogs_face_count += nuclear_count;
-  storage->nuclear_hogs_max_interface_speed =
-      fmax(storage->nuclear_hogs_max_interface_speed,
-           nuclear_maximum_speed);
+  storage->emergency_diffusion_face_count += emergency_count;
+  storage->emergency_diffusion_max_interface_speed =
+      fmax(storage->emergency_diffusion_max_interface_speed,
+           emergency_maximum_speed);
   return failed ? -1 : 0;
 }
 

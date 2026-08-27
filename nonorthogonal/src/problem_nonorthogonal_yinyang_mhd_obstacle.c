@@ -111,18 +111,18 @@ static gamera_no_vec3 initial_velocity = {{1.0, 0.0, 0.0}};
 static gamera_no_vec3 initial_magnetic = {{0.0, 0.10, 0.05}};
 
 #ifdef GAMERA_EARTH_DIPOLE_BACKGROUND
-/* Fortran msphutils.F90 uses a southward code moment from 0.31 G. */
+/* Use a southward code dipole moment corresponding to 0.31 G. */
 static const double earth_equatorial_surface_field_tesla = 3.10e-5;
 static gamera_no_dipole earth_dipole = {{{0.0, 0.0, -1.0}}};
-/* examples/earthcmi/cmiD.xml: keep the tenuous magnetosphere floors in the
- * same code units as Kaiju.  The legacy C defaults are intentionally much
- * larger and are inappropriate for the Earth CMI problem. */
+/* Tenuous-magnetosphere floors in the accepted production code units. The
+ * legacy C defaults are intentionally much larger and are inappropriate for
+ * this Earth M-I problem. */
 static const double earth_density_floor = 1.0e-6;
 static const double earth_pressure_floor = 1.0e-8;
 #endif
 
 #ifdef GAMERA_EARTH_UPSTREAM_STARTUP
-/* Kaiju msphutils.F90 defaults, with an explicit upstream launch plane. */
+/* Accepted Earth startup parameters with an explicit upstream launch plane. */
 static const double earth_cut_radius = 16.0;
 static const double earth_cut_length = 8.0;
 static const double startup_front_x = -30.0;
@@ -305,8 +305,8 @@ static int conducting_sphere_potential(gamera_no_vec3 point, void *context,
   *potential = (gamera_no_vec3){{0.0, 0.0, 0.0}};
 #ifdef GAMERA_EARTH_UPSTREAM_STARTUP
   /*
-   * Initialize total B, as Kaiju does before subtracting B0 face fluxes:
-   * a radially cut dipole around Earth plus an IMF front at x=-30 RE.
+   * Initialize total B before subtracting B0 face fluxes: a radially cut
+   * dipole around Earth plus an IMF front at x=-30 RE.
    */
   const double dipole_weight =
       cubic_ramp_down(radius, earth_cut_radius, earth_cut_length);
@@ -422,7 +422,7 @@ int problem_runtime_init(void) {
            patch_id);
 #ifdef GAMERA_EARTH_DIPOLE_BACKGROUND
   log_info("Earth magnetosphere floors rho=%.9g p=%.9g code "
-           "(Kaiju earthcmi defaults)",
+           "(accepted production values)",
            rho_floor, p_floor);
   if (!(norm_config.B_Norm > 0.0) || !isfinite(norm_config.B_Norm)) {
     log_error("Earth background dipole requires a finite positive B_Norm");
@@ -717,10 +717,9 @@ static void reflect_inner_cell(int destination, int source, int j, int k,
     gamera_no_vec3 ghost_velocity;
     if (gamera_mi_coupling_ghost_velocity(
             point, source_velocity, &ghost_velocity) == 0) {
-#ifdef GAMERA_STRICT_KAIJU_GAS_WALL
-      /* The helper returns 2*V_EB-v_active for the GAMERA-OP mirrored-ghost
-       * convention.  Recover Kaiju's literal ghost state V_EB for the
-       * compatibility experiment. */
+#ifdef GAMERA_STRICT_INNER_GAS_WALL
+      /* The helper returns 2*V_EB-v_active for the mirrored-ghost convention.
+       * Recover the directly stored wall state V_EB for strict-wall mode. */
       for (int component = 0; component < GAMERA_NO_DIM; ++component) {
         ghost_velocity.value[component] =
             0.5 * (ghost_velocity.value[component] + velocity[component]);
@@ -736,7 +735,7 @@ static void reflect_inner_cell(int destination, int source, int j, int k,
     }
   }
 #endif
-#ifdef GAMERA_STRICT_KAIJU_GAS_WALL
+#ifdef GAMERA_STRICT_INNER_GAS_WALL
   gas[0][gas_v1 + offset][destination][j][k] = 0.0;
   gas[0][gas_v2 + offset][destination][j][k] = 0.0;
   gas[0][gas_v3 + offset][destination][j][k] = 0.0;
@@ -830,7 +829,7 @@ static int face_flux_density(const gamera_no_grid *grid, const double *flux,
   return isfinite(*result) ? 0 : -1;
 }
 
-/* Kaiju DiffuseOuter: prevent transverse field from hanging on the shell. */
+/* Prevent transverse magnetic field from hanging on the outer shell. */
 static int add_wind_diffusive_emf(
     gamera_no_storage *storage, const gamera_no_grid *grid,
     const size_t active_lower[3], const size_t active_upper[3], double time) {
@@ -1253,11 +1252,10 @@ int problem_nonorthogonal_magnetic_boundary(gamera_no_storage *storage,
           }
           gamera_no_vec3 field[2];
           if (inner) {
-#ifdef GAMERA_STRICT_KAIJU_MAGNETIC_WALL
-            /* Kaiju earthcmi::IonInner copies the first active-shell face
-             * flux density into every radial ghost (with the face-area
-             * ratio).  Preserve the CT face value directly for this A/B
-             * compatibility mode instead of reconstructing it from Bxyz. */
+#ifdef GAMERA_STRICT_INNER_MAGNETIC_WALL
+            /* Copy the first active-shell face-flux density into every radial
+             * ghost with the face-area ratio. Preserve the CT face value
+             * directly instead of reconstructing it from Cartesian B. */
             size_t source_coordinate[3] = {(size_t)is, j, k};
             for (int axis = 0; axis < GAMERA_NO_DIM; ++axis) {
               if (source_coordinate[axis] >=
@@ -1309,9 +1307,9 @@ int problem_nonorthogonal_magnetic_boundary(gamera_no_storage *storage,
 #else
 #ifdef GAMERA_BOW_SHOCK
             /*
-             * Kaiju's magnetosphere wall copies Cartesian Bxyz into the
+             * The strict magnetosphere wall copies Cartesian B into the
              * conjugate ghost and reconstructs every face flux from that
-             * field.  This is dB/dn=0, not a polar-vector reflection.
+             * field. This is dB/dn=0, not a polar-vector reflection.
              */
             field[0] = storage->cell_magnetic[cell];
             field[1] = storage->old_cell_magnetic[cell];
@@ -1355,7 +1353,7 @@ int problem_nonorthogonal_magnetic_boundary(gamera_no_storage *storage,
     /* Explicitly impose zero Cartesian-field gradient in predictor/ghost
      * storage as well as on the reconstructed face fluxes. */
     for (int i = 0; i < is; ++i) {
-#ifdef GAMERA_STRICT_KAIJU_MAGNETIC_WALL
+#ifdef GAMERA_STRICT_INNER_MAGNETIC_WALL
       const size_t source_i = (size_t)is;
 #else
       const size_t source_i = (size_t)(2 * is - 1 - i);
@@ -1426,7 +1424,7 @@ void problem_init(void) {
 #ifdef GAMERA_EARTH_UPSTREAM_STARTUP
   log_info("Initializing upstream-launched Earth magnetosphere: stationary "
            "ambient (rho=%.3g,p=%.3g), wind/IMF front x=%.1f RE width %.1f "
-           "RE, Kaiju cut dipole rCut=%.1f lCut=%.1f, r=[%.1f,%.1f] RE, "
+           "RE, cut dipole rCut=%.1f lCut=%.1f, r=[%.1f,%.1f] RE, "
            "radial map v%d (legacy stretch %.8g), patch %d",
            startup_ambient_density, startup_ambient_pressure,
            startup_front_x, startup_front_width, earth_cut_radius,
@@ -1507,7 +1505,7 @@ int problem_nonorthogonal_adjust_background(
   if (grid == NULL || background == NULL || background->cell_force == NULL) {
     return -1;
   }
-  /* Kaiju hard-zeros dpB0 in the force-free inner part of its cut dipole. */
+  /* Zero dpB0 in the force-free inner part of the cut dipole. */
   const size_t count = gamera_no_element_count3(grid->cell_extent);
   for (size_t cell = 0; cell < count; ++cell) {
 #ifdef GAMERA_EARTH_UPSTREAM_STARTUP
