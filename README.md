@@ -41,6 +41,29 @@ This public release supports Cartesian and Spherical coordinates and includes a 
 such as the Orszag–Tang vortex, magnetic field loop advection, and blast wave tests. Its modular architecture allows 
 researchers to easily implement new coordinates and physical configurations by leveraging the provided template structures.
 
+## Non-orthogonal Earth production solver
+
+The existing orthogonal solver above remains unchanged. The frozen Yin-Yang
+global-magnetosphere production solver, including solar-wind driving,
+magnetosphere-ionosphere coupling, electron precipitation, and conductance, is
+maintained in [`nonorthogonal/`](nonorthogonal/README.md). New users should
+start with its local two-rank smoke example before using the 256-rank Sugon
+example.
+
+Student entry points:
+
+- [Production-model overview](nonorthogonal/README.md)
+- [Local installation and first-run guide](nonorthogonal/docs/LOCAL_SETUP.md)
+- [Grid sizes, MPI decompositions and intended uses](nonorthogonal/docs/GRID_OPTIONS.md)
+- [Solar-wind input for idealized schedules and one-command NASA events](nonorthogonal/docs/SOLAR_WIND.md)
+- [NASA OMNI event downloader/converter](nonorthogonal/scripts/solar_wind/fetch_nasa_omni_event.py)
+- [Local two-rank example and scripts](nonorthogonal/examples/earth_magnetosphere/local_smoke/)
+- [Sugon setup and production-run guide](nonorthogonal/docs/SUGON.md)
+- [Sugon 256-rank example and Slurm scripts](nonorthogonal/examples/earth_magnetosphere/sugon_128/)
+- [Standard XY/XZ, FAC/potential and MI diagnostics](nonorthogonal/docs/DIAGNOSTICS.md)
+- [Yin-Yang and schema-3 output data model](nonorthogonal/docs/OUTPUT_DATA_MODEL.md)
+- [Accepted production provenance](nonorthogonal/docs/PRODUCTION_PROVENANCE.md)
+
 ## Requirements
 
 GCC, MPI, OpenMP, HDF5, and CMake are required.
@@ -103,6 +126,3 @@ However, it also requires post-processing tools to combine or analyze the partit
 
 A MATLAB script is provided in the `scripts/` directory to handle the rank-split output files. 
 The script reads all HDF5 files for a given output step, combines them into a full 3D field, and saves the results in a more convenient hdf5 format for analysis and visualization.
-
-
-

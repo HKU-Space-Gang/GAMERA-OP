@@ -1,0 +1,80 @@
+# Two-rank, 20-physical-second local smoke run of the frozen production model.
+# One MPI rank owns each Yin/Yang patch. wind_time_offset starts immediately
+# in the Bz=-5 nT interval so the complete solar-wind path is exercised.
+ni_global: 32
+nj_global: 12
+nk_global: 32
+proc_dims_i: 1
+proc_dims_j: 1
+proc_dims_k: 1
+Nt: 1000000
+
+time_stop: 0.3139224611520954
+output_interval: 0.3139224611520954
+# Compact per-patch analysis requires parallel HDF5. The portable laptop
+# smoke instead validates rank-local restart MHD plus schema-3 MI output.
+analysis_output_enabled: 0
+restart_interval: 0.3139224611520954
+yinyang_angular_extension_deg: 2.0
+
+x_Norm: 6371000.0
+u_Norm: 100000.0
+rho_Norm: 1.67262192369e-21
+
+wind_file: upstream_zero_then_minus5.h5
+wind_input_units: physical
+wind_velocity_units: km/s
+wind_interpolation: step
+wind_reference_x: -200.0
+wind_reference_y: 0.0
+wind_reference_z: 0.0
+wind_time_offset: 3600.0
+
+mi_enabled: 1
+mi_diagnostics_enabled: 1
+mi_coupling_interval_s: 10.0
+mi_diagnostics_interval_s: 20.0
+mi_ionosphere_radius_re: 1.0
+mi_pedersen_siemens: 5.0
+mi_hall_siemens: 0.0
+mi_current_shell: 1
+mi_angular_oversampling: 2.0
+mi_maximum_iterations: 20000
+mi_relative_tolerance: 1.0e-10
+mi_absolute_tolerance: 1.0e-8
+
+mi_electron_precipitation_enabled: 1
+mi_electron_precipitation_hall_model: 2
+mi_electron_precipitation_beta: 0.8724646
+mi_electron_precipitation_ramp_s: 600.0
+mi_electron_precipitation_conductance_feedback_enabled: 1
+mi_electron_precipitation_conductance_smoothing_s: 30.0
+
+# LOMPE q'(SZA) twilight tail through 120 degrees in model-native
+# coordinates. Earth-to-Sun is -X.
+mi_euv_f107: 150.0
+mi_sunward_direction_x: -1.0
+mi_sunward_direction_y: 0.0
+mi_sunward_direction_z: 0.0
+
+mi_hybrid_dpb_enabled: 1
+mi_dpb_absolute_potential_v: 10000.0
+mi_dpb_adaptive_potential_fraction: 0.20
+mi_dpb_adaptive_potential_floor_v: 2000.0
+mi_dpb_potential_equatorward_offset_deg: 3.0
+mi_dpb_fac_equatorward_offset_deg: 2.5
+mi_dpb_fac_absolute_floor_a_m2: 3.0e-8
+mi_dpb_minimum_boundary_latitude_deg: 58.0
+mi_dpb_maximum_candidate_latitude_deg: 74.0
+mi_dpb_transition_width_deg: 3.0
+mi_dpb_temporal_timescale_s: 300.0
+mi_dpb_maximum_slew_deg_per_s: 0.008333333333333333
+mi_dpb_quiet_initial_nightside_latitude_deg: 64.5
+mi_dpb_oval_center_latitude_deg: 85.0
+mi_dpb_oval_center_mlt_h: 1.0
+mi_dpb_nightside_poleward_limit_deg: 70.0
+
+# Independent floor on total conductance; it is not raw EUV conductance.
+mi_minimum_pedersen_siemens: 2.0
+mi_minimum_hall_siemens: 0.0
+mi_maximum_hall_to_pedersen: 6.0

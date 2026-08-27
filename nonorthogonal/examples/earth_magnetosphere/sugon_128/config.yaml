@@ -1,0 +1,93 @@
+# Five-hour southward-IMF electron-precipitation/conductance physics run.
+# 0--1 h zero IMF, then 1--5 h Bz=-5 nT.
+ni_global: 128
+nj_global: 48
+nk_global: 144
+proc_dims_i: 4
+proc_dims_j: 4
+proc_dims_k: 8
+Nt: 1000000
+
+time_stop: 282.5302150368859
+output_interval: 1.8835347669125726
+analysis_output_enabled: 1
+restart_interval: 56.50604300737718
+yinyang_angular_extension_deg: 2.0
+
+x_Norm: 6371000.0
+u_Norm: 100000.0
+rho_Norm: 1.67262192369e-21
+
+wind_file: upstream_zero_then_minus5.h5
+wind_input_units: physical
+wind_velocity_units: km/s
+wind_interpolation: step
+wind_reference_x: -200.0
+wind_reference_y: 0.0
+wind_reference_z: 0.0
+wind_time_offset: 0.0
+
+mi_enabled: 1
+mi_diagnostics_enabled: 1
+mi_coupling_interval_s: 10.0
+# Keep M-I science output synchronized with compact MHD output.
+mi_diagnostics_interval_s: 120.0
+mi_ionosphere_radius_re: 1.0
+mi_pedersen_siemens: 5.0
+mi_hall_siemens: 0.0
+mi_current_shell: 1
+# Resolve variable conductance, the hybrid DPB and Hall terms on an
+# ionospheric grid with half the nominal MHD angular spacing.  Counts remain
+# automatically derived from the MHD grid and mapped polar-cap extent.
+mi_angular_oversampling: 2.0
+mi_maximum_iterations: 20000
+mi_relative_tolerance: 1.0e-10
+mi_absolute_tolerance: 1.0e-8
+
+# Fedder-1995 precipitation, Robinson auroral conductance and Hall-aware
+# variable-conductance potential solve.
+mi_electron_precipitation_enabled: 1
+mi_electron_precipitation_hall_model: 2
+# Calibrated thermal number-flux coefficient: 2x the Fedder-model baseline
+# 0.4362323.  At fixed MHD/FAC state this doubles F_N and F_E while leaving
+# characteristic energy unchanged; Robinson Sigma_P/H scale by sqrt(2).
+mi_electron_precipitation_beta: 0.8724646
+mi_electron_precipitation_ramp_s: 600.0
+mi_electron_precipitation_conductance_feedback_enabled: 1
+mi_electron_precipitation_conductance_smoothing_s: 30.0
+
+# LOMPE solar EUV, including its smooth twilight tail through
+# SZA=120 degrees; medium solar activity.  The independent Pedersen floor
+# below is not EUV.
+mi_euv_f107: 150.0
+# Native Yin--Yang coordinates use +X for the anti-sunward solar-wind flow,
+# so the direction from Earth toward the Sun is -X.  EUV illumination is
+# computed from the Cartesian surface-normal dot product with this vector.
+mi_sunward_direction_x: -1.0
+mi_sunward_direction_y: 0.0
+mi_sunward_direction_z: 0.0
+
+# Accepted Zhang-offset hybrid DPB. Only diffuse/thermal precipitation is
+# masked; the 70-degree poleward limit applies only at 20--04 MLT.
+mi_hybrid_dpb_enabled: 1
+mi_dpb_absolute_potential_v: 10000.0
+mi_dpb_adaptive_potential_fraction: 0.20
+mi_dpb_adaptive_potential_floor_v: 2000.0
+mi_dpb_potential_equatorward_offset_deg: 3.0
+mi_dpb_fac_equatorward_offset_deg: 2.5
+mi_dpb_fac_absolute_floor_a_m2: 3.0e-8
+mi_dpb_minimum_boundary_latitude_deg: 58.0
+mi_dpb_maximum_candidate_latitude_deg: 74.0
+mi_dpb_transition_width_deg: 3.0
+mi_dpb_temporal_timescale_s: 300.0
+mi_dpb_maximum_slew_deg_per_s: 0.008333333333333333
+mi_dpb_quiet_initial_nightside_latitude_deg: 64.5
+mi_dpb_oval_center_latitude_deg: 85.0
+mi_dpb_oval_center_mlt_h: 1.0
+mi_dpb_nightside_poleward_limit_deg: 70.0
+
+# Global numerical/background floor applied only when total conductance is
+# assembled; it is not written into Sigma_P_EUV.
+mi_minimum_pedersen_siemens: 2.0
+mi_minimum_hall_siemens: 0.0
+mi_maximum_hall_to_pedersen: 6.0
