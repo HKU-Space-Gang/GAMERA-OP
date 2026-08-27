@@ -1,0 +1,56 @@
+# Build and run products
+/build/
+/run/
+/compile_commands.json
+*.o
+*.a
+run_mhd
+
+# Editor and interpreter debris
+*~
+*.orig
+*.swp
+__pycache__/
+*.pyc
+
+# Exact files copied from the frozen run are repackaged under examples/.
+/config.production-128.yaml
+/sugon.production-128.slurm
+/upstream_zero_then_minus5.h5
+
+# Not part of the frozen Earth production release: experimental H+ / inner-
+# magnetosphere development, replay tools, and their tests.
+/src/inner_magnetosphere/
+/src/nonorthogonal/nonorthogonal_inner_magnetosphere_*
+/src/nonorthogonal_backend/nonorthogonal_checkpoint_manifest_v2.*
+/src/nonorthogonal_backend/nonorthogonal_inner_magnetosphere_*
+
+# The application subtree exposes only the frozen COORD_TYPE=3 / PROBLEM=22
+# production target. Orthogonal coordinate implementations remain in the
+# unchanged repository root; historical non-orthogonal problem ladders are
+# covered by kernel tests rather than shipped as alternate executables here.
+/src/spherical/
+/src/cartesian/cartesian_general.c
+/src/problem_FieldLoop_*.c
+/src/problem_hd_blast_spherical_ring.c
+/src/problem_nonorthogonal_blast_spherical.c
+/src/problem_nonorthogonal_ot.c
+/src/problem_nonorthogonal_yinyang_entropy.c
+/src/problem_nonorthogonal_yinyang_hd_blast.c
+/src/problem_nonorthogonal_yinyang_hd_obstacle.c
+/src/problem_nonorthogonal_yinyang_mhd_uniform.c
+/src/problem_test_*.c
+/tests/*inner_magnetosphere*
+/tests/*online_feedback*
+/tests/*online_restart*
+/tests/*prescribed_stream*
+/tests/test_diagnose_online_hplus_snapshots.py
+/tests/test_nonorthogonal_live_driver_default_off.c
+/tests/test_nonorthogonal_checkpoint_manifest_v2.c
+/tests/tools/
+/tools/
+/replay/
+
+# Historical analysis scripts are not part of the solver distribution. The
+# production C regression tests remain tracked.
+/tests/*.py

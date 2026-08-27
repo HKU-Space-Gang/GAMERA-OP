@@ -41,6 +41,15 @@ This public release supports Cartesian and Spherical coordinates and includes a 
 such as the Orszag–Tang vortex, magnetic field loop advection, and blast wave tests. Its modular architecture allows 
 researchers to easily implement new coordinates and physical configurations by leveraging the provided template structures.
 
+## Non-orthogonal Earth production solver
+
+The existing orthogonal solver above remains unchanged. The frozen Yin-Yang
+global-magnetosphere production solver, including solar-wind driving,
+magnetosphere-ionosphere coupling, electron precipitation, and conductance, is
+maintained in [`nonorthogonal/`](nonorthogonal/README.md). New users should
+start with its local two-rank smoke example before using the 256-rank Sugon
+example.
+
 ## Requirements
 
 GCC, MPI, OpenMP, HDF5, and CMake are required.
@@ -103,6 +112,5 @@ However, it also requires post-processing tools to combine or analyze the partit
 
 A MATLAB script is provided in the `scripts/` directory to handle the rank-split output files. 
 The script reads all HDF5 files for a given output step, combines them into a full 3D field, and saves the results in a more convenient hdf5 format for analysis and visualization.
-
 
 
