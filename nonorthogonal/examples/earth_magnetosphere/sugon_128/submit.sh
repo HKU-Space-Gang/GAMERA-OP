@@ -19,5 +19,12 @@ run_job="$(
     --export="ALL,GAMERA_RUN_ROOT=$run_root" \
     "$example_dir/run.slurm"
 )"
+diagnostics_job="$(
+  sbatch --parsable \
+    --dependency="afterok:$run_job" \
+    --export="ALL,GAMERA_RUN_ROOT=$run_root" \
+    "$example_dir/diagnostics.slurm"
+)"
 
-printf 'build_job=%s\nrun_job=%s\n' "$build_job" "$run_job"
+printf 'build_job=%s\nrun_job=%s\ndiagnostics_job=%s\n' \
+  "$build_job" "$run_job" "$diagnostics_job"

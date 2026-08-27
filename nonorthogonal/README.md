@@ -34,8 +34,9 @@ If this is your first time using the code:
 
 1. Follow [Local setup](docs/LOCAL_SETUP.md).
 2. Build the code and run the two-rank smoke example.
-3. Read the output and configuration notes below.
-4. Only then use the [Sugon 128-resolution example](docs/SUGON.md).
+3. Read the [Yin-Yang output data model](docs/OUTPUT_DATA_MODEL.md).
+4. Learn the [standard diagnostics and movie workflow](docs/DIAGNOSTICS.md).
+5. Only then use the [Sugon 128-resolution example](docs/SUGON.md).
 
 The local smoke run verifies installation and the complete coupling path. Its
 32x12x32 grid and 20-second duration are not suitable for scientific analysis.
@@ -56,7 +57,8 @@ nonorthogonal/
 ├── scripts/
 │   ├── build_local.sh
 │   ├── run_local_smoke.sh
-│   └── validate_smoke.py
+│   ├── validate_smoke.py
+│   └── diagnostics/              frozen standard renderers
 ├── examples/earth_magnetosphere/
 │   ├── common/                  frozen solar-wind input
 │   ├── local_smoke/             two-rank installation test
@@ -120,6 +122,38 @@ write two raw p0/p1 files whose physical times differ only at roundoff level.
 Treat them as one physical time and retain the raw files as provenance. MI
 output is not duplicated. Standard postprocessing must select the file nearest
 each requested physical cadence rather than count raw filenames blindly.
+
+## Yin-Yang and MI data structure
+
+MHD output is stored as a matched pair, not as one Cartesian array:
+
+```text
+analysis_grid_p0.h5              Yin static grid
+analysis_grid_p1.h5              Yang static grid
+analysis_p0_NNNNNN.h5            Yin compact state at one physical time
+analysis_p1_NNNNNN.h5            Yang compact state at the same time
+mi_ionosphere_NNNNNN.h5          North and South MI state in one file
+```
+
+For each MHD patch, `coordinates` has shape `(3,NI,NJ,NK)`, `vertices` has
+shape `(3,NI+1,NJ+1,NK+1)`, and `state` has shape `(8,NI,NJ,NK)`. The eight
+fields are named by the file metadata and are
+`rho,p,vx,vy,vz,Bx,By,Bz`. p0 and p1 overlap angularly; they must be
+interpolated with the Yin-Yang overlap ownership rule and must never be
+concatenated along an array dimension.
+
+Each schema-3 MI file contains shared `longitude_rad` and `colatitude_rad`
+axes plus `north/` and `south/` groups. Each hemisphere stores potential,
+parallel FAC, total and EUV Pedersen/Hall conductance, FE, FN, DPB fields and
+patch-ownership audit fields. The North and South longitude axes are
+identical: 00 MLT is bottom, 06 right, 12 top and 18 left. Do not mirror the
+South data. Apply each hemisphere's `upward_fac_multiplier` only to convert
+stored parallel FAC to upward FAC.
+
+See [Yin-Yang output data model](docs/OUTPUT_DATA_MODEL.md) for dataset shapes,
+units, normalization indices, native/model coordinates and reading rules.
+Use only the [frozen standard diagnostics](docs/DIAGNOSTICS.md) for production
+comparisons.
 
 ## Frozen versus configurable
 

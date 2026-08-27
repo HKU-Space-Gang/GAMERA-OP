@@ -16,9 +16,10 @@ checking out the PR branch specified in that pull request.
 
 ## 2. Install compilers and libraries
 
-The code needs a C compiler, CMake, MPI, OpenMP, HDF5, Python 3, NumPy, and
-h5py. Parallel HDF5 is mandatory for production, but the small local smoke
-test may use serial HDF5 because its compact files have a safe serial path.
+The code needs a C compiler, CMake, MPI, OpenMP, HDF5, Python 3, NumPy, h5py,
+and Matplotlib. Parallel HDF5 is mandatory for production, but the small local
+smoke test may use serial HDF5 because its compact files have a safe serial
+path.
 
 ### macOS with Homebrew
 
@@ -29,7 +30,7 @@ brew install cmake open-mpi hdf5 libomp python
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install --upgrade pip
-python3 -m pip install numpy h5py
+python3 -m pip install numpy h5py matplotlib
 ```
 
 On later terminal sessions, return to this directory and reactivate the
@@ -44,7 +45,7 @@ sudo apt install build-essential cmake openmpi-bin libopenmpi-dev \
 python3 -m venv .venv
 source .venv/bin/activate
 python3 -m pip install --upgrade pip
-python3 -m pip install numpy h5py
+python3 -m pip install numpy h5py matplotlib
 ```
 
 If CMake selects serial HDF5 on Ubuntu, set the parallel installation before
@@ -99,7 +100,19 @@ that the solar-wind reader and complete MI/precipitation/conductance path are
 exercised immediately. It is an installation test, not a converged
 magnetosphere simulation.
 
-## 6. Common failures
+## 6. Read and plot production output
+
+Before analyzing a cluster result, read the
+[Yin-Yang output data model](OUTPUT_DATA_MODEL.md). The compact production
+files are a p0/p1 patch pair plus a schema-3 MI file; p0 and p1 are not array
+tiles that can be concatenated.
+
+Use the [standard diagnostics workflow](DIAGNOSTICS.md) to generate the XY/XZ
+magnetosphere frames, embedded North/South FAC and potential, MHD/MI time
+series, full MI snapshots and H.264 movie. The local smoke run intentionally
+does not create compact MHD plotting files when it is built with serial HDF5.
+
+## 7. Common failures
 
 ### CMake found serial HDF5
 

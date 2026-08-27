@@ -57,6 +57,8 @@ Student entry points:
 - [Local two-rank example and scripts](nonorthogonal/examples/earth_magnetosphere/local_smoke/)
 - [Sugon setup and production-run guide](nonorthogonal/docs/SUGON.md)
 - [Sugon 256-rank example and Slurm scripts](nonorthogonal/examples/earth_magnetosphere/sugon_128/)
+- [Standard XY/XZ, FAC/potential and MI diagnostics](nonorthogonal/docs/DIAGNOSTICS.md)
+- [Yin-Yang and schema-3 output data model](nonorthogonal/docs/OUTPUT_DATA_MODEL.md)
 - [Accepted production provenance](nonorthogonal/docs/PRODUCTION_PROVENANCE.md)
 
 ## Requirements
@@ -121,4 +123,3 @@ However, it also requires post-processing tools to combine or analyze the partit
 
 A MATLAB script is provided in the `scripts/` directory to handle the rank-split output files. 
 The script reads all HDF5 files for a given output step, combines them into a full 3D field, and saves the results in a more convenient hdf5 format for analysis and visualization.
-

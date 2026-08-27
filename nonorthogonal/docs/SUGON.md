@@ -16,7 +16,7 @@ Use a Git tag or commit SHA for real production, not a moving branch.
 
 ## 2. Set Slurm account information
 
-Edit `build.slurm` and `run.slurm`. Replace:
+Edit `build.slurm`, `run.slurm`, and `diagnostics.slurm`. Replace:
 
 ```text
 REPLACE_WITH_YOUR_ACCOUNT
@@ -48,14 +48,16 @@ Choose a fresh absolute run directory. The scripts refuse to overwrite it.
 ./submit.sh /public/home/YOUR_USER/runs/gamera_earth_bzminus5_128_v1
 ```
 
-The command prints two IDs. The production run has an `afterok` dependency on
-the build and regression gate, so a failed build cannot launch a large job.
+The command prints three IDs. The production run has an `afterok` dependency
+on the build and regression gate, and the standard diagnostics job has an
+`afterok` dependency on production. A failed stage therefore cannot launch a
+later stage.
 
 Check status with:
 
 ```bash
-squeue -j BUILD_JOB_ID,RUN_JOB_ID
-sacct -j BUILD_JOB_ID,RUN_JOB_ID \
+squeue -j BUILD_JOB_ID,RUN_JOB_ID,DIAGNOSTICS_JOB_ID
+sacct -j BUILD_JOB_ID,RUN_JOB_ID,DIAGNOSTICS_JOB_ID \
   --format=JobID,JobName,State,ExitCode,Elapsed,AllocCPUS
 ```
 
@@ -84,6 +86,24 @@ differs from 18,000 s only by floating-point roundoff. Keep both raw files,
 but count unique physical times and select the closest file for diagnostics.
 There must still be exactly 151 unique 120-second physical times and 151 MI
 files.
+
+The dependent `diagnostics.slurm` job uses the frozen scripts documented in
+[Standard diagnostics and movie](DIAGNOSTICS.md). It must finish with
+`DIAGNOSTICS_COMPLETE`, 151 non-empty frames, a final standard two-panel PNG,
+MHD and MI time-series PNGs, a full North/South MI snapshot and a frames tar.
+If `ffmpeg` is available, it also writes a 10-fps H.264 `yuv420p` MP4. Set
+`FFMPEG_BIN=/absolute/path/to/ffmpeg` at submission if it is not on `PATH`.
+
+The diagnostic products are placed under:
+
+```text
+RUN_ROOT/diagnostics/
+```
+
+For manual rendering, alternate time windows and the exact Python commands,
+follow [Standard diagnostics and movie](DIAGNOSTICS.md). Dataset layouts and
+coordinate conventions are specified in
+[Yin-Yang output data model](OUTPUT_DATA_MODEL.md).
 
 ## 5. What may be changed for a science run
 
