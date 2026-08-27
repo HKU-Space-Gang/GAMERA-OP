@@ -100,7 +100,17 @@ that the solar-wind reader and complete MI/precipitation/conductance path are
 exercised immediately. It is an installation test, not a converged
 magnetosphere simulation.
 
-## 6. Read and plot production output
+## 6. Choose the next grid
+
+The local command deliberately defaults to `32x12x32x2`, not the medium 72
+grid. After it passes, use [Grid and MPI options](GRID_OPTIONS.md) to choose
+between the validated `72x24x72x2` medium preset and the frozen
+`128x48x144x2` production preset. The guide gives the required MPI
+decomposition, total ranks, derived MI grid and allowed purpose of each.
+
+Do not use a long 32-grid smoke result for physical interpretation.
+
+## 7. Read and plot production output
 
 Before analyzing a cluster result, read the
 [Yin-Yang output data model](OUTPUT_DATA_MODEL.md). The compact production
@@ -112,7 +122,7 @@ magnetosphere frames, embedded North/South FAC and potential, MHD/MI time
 series, full MI snapshots and H.264 movie. The local smoke run intentionally
 does not create compact MHD plotting files when it is built with serial HDF5.
 
-## 7. Common failures
+## 8. Common failures
 
 ### CMake found serial HDF5
 

@@ -14,6 +14,10 @@ cd GAMERA-OP/nonorthogonal/examples/earth_magnetosphere/sugon_128
 
 Use a Git tag or commit SHA for real production, not a moving branch.
 
+This checked-in example is the frozen 128 preset. For the exact differences
+between the 32 smoke, 72 medium and 128 production grids, see
+[Grid and MPI options](GRID_OPTIONS.md).
+
 ## 2. Set Slurm account information
 
 Edit `build.slurm`, `run.slurm`, and `diagnostics.slurm`. Replace:

@@ -5,6 +5,9 @@ stores two overlapping spherical patches plus one coupled ionosphere file.
 Consumers must preserve patch identity and use the overlap rule; concatenating
 p0 and p1 along an array axis is incorrect.
 
+The supported MHD and automatically derived MI dimensions are summarized in
+[Grid and MPI options](GRID_OPTIONS.md).
+
 ## Patch topology and coordinates
 
 - `p0` is the Yin patch and `p1` is the Yang patch.

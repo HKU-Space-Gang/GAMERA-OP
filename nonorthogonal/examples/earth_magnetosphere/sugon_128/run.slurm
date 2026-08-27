@@ -47,7 +47,7 @@ export HDF5_USE_FILE_LOCKING=FALSE
   echo "grid=128x48x144x2"
   echo "mpi_ranks=256"
   echo "proc_dims_per_patch=4x4x8"
-  echo "radial_map=v4_2p5_to_14_RE_uniform_0p5_RE_then_C1_exponential_to_200_RE"
+  echo "radial_map=v4_2p5_to_14_RE_linear_knot_at_23_over_72_then_C1_exponential_to_200_RE"
   echo "mi_grid=384x43_per_hemisphere"
   echo "mi_solver=cached_conductance_tensor_BiCGStab_SSOR"
   echo "yinyang_sparse_overset=ON_profile=OFF"

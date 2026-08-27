@@ -8,8 +8,10 @@ magnetosphere path needed by a user:
 
 - finite-volume MHD in Cartesian physical components on a non-orthogonal
   Yin-Yang grid;
-- the production radial map from 2.5 to 200 Earth radii: exactly 0.5 RE cells
-  from 2.5 to 14 RE, followed by one C1 exponential stretch;
+- the production radial map from 2.5 to 200 Earth radii: a linear inner branch
+  joined C1 at 14 RE and logical radius 23/72 to one exponential stretch; the
+  72 grid has 0.5 RE inner cells and the 128 grid samples that branch at
+  0.28125 RE;
 - time-dependent HDF5 solar-wind input and upstream propagation;
 - dipole/background-field treatment and the accepted MFE Yin-Yang interface;
 - sparse Yin-Yang overset communication;
@@ -34,9 +36,10 @@ If this is your first time using the code:
 
 1. Follow [Local setup](docs/LOCAL_SETUP.md).
 2. Build the code and run the two-rank smoke example.
-3. Read the [Yin-Yang output data model](docs/OUTPUT_DATA_MODEL.md).
-4. Learn the [standard diagnostics and movie workflow](docs/DIAGNOSTICS.md).
-5. Only then use the [Sugon 128-resolution example](docs/SUGON.md).
+3. Choose a supported [grid and MPI preset](docs/GRID_OPTIONS.md).
+4. Read the [Yin-Yang output data model](docs/OUTPUT_DATA_MODEL.md).
+5. Learn the [standard diagnostics and movie workflow](docs/DIAGNOSTICS.md).
+6. Only then use the [Sugon 128-resolution example](docs/SUGON.md).
 
 The local smoke run verifies installation and the complete coupling path. Its
 32x12x32 grid and 20-second duration are not suitable for scientific analysis.
@@ -98,6 +101,12 @@ Every Yin-Yang run has two patches. The required MPI rank count is therefore:
 
 The local config uses 2 ranks. The Sugon config uses
 `2 * 4 * 4 * 8 = 256` ranks. A mismatch is a configuration error.
+
+The supported 32, 72 and 128 presets, their tested decompositions and their
+automatically derived MI grids are listed in
+[Grid and MPI options](docs/GRID_OPTIONS.md). The 32 grid is an installation
+smoke, the 72 grid is a medium validation option, and only the 128 grid is the
+frozen production configuration.
 
 ## Time units
 

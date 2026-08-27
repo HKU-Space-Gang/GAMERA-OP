@@ -54,6 +54,7 @@ Student entry points:
 
 - [Production-model overview](nonorthogonal/README.md)
 - [Local installation and first-run guide](nonorthogonal/docs/LOCAL_SETUP.md)
+- [Grid sizes, MPI decompositions and intended uses](nonorthogonal/docs/GRID_OPTIONS.md)
 - [Local two-rank example and scripts](nonorthogonal/examples/earth_magnetosphere/local_smoke/)
 - [Sugon setup and production-run guide](nonorthogonal/docs/SUGON.md)
 - [Sugon 256-rank example and Slurm scripts](nonorthogonal/examples/earth_magnetosphere/sugon_128/)
