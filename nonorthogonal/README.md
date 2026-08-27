@@ -38,6 +38,8 @@ If this is your first time using the code:
 2. Build the code and run the two-rank smoke example.
 3. Choose a supported [grid and MPI preset](docs/GRID_OPTIONS.md).
 4. Configure an [idealized or observed-event solar-wind input](docs/SOLAR_WIND.md).
+   The observed-event path is one Python command from NASA download through
+   validated HDF5, YAML, QA, and provenance products.
 5. Read the [Yin-Yang output data model](docs/OUTPUT_DATA_MODEL.md).
 6. Learn the [standard diagnostics and movie workflow](docs/DIAGNOSTICS.md).
 7. Only then use the [Sugon 128-resolution example](docs/SUGON.md).
@@ -62,6 +64,8 @@ nonorthogonal/
 │   ├── build_local.sh
 │   ├── run_local_smoke.sh
 │   ├── validate_smoke.py
+│   ├── solar_wind/
+│   │   └── fetch_nasa_omni_event.py  one-command NASA OMNI event builder
 │   └── diagnostics/              frozen standard renderers
 ├── examples/earth_magnetosphere/
 │   ├── common/                  frozen solar-wind input

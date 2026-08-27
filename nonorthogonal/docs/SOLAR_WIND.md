@@ -234,176 +234,109 @@ keep the original HDF5 file and its SHA-256 hash with the result.
 
 ## 5. Observed-event solar wind
 
-An event file needs more care than an idealized schedule. Recommended sources
-include one-minute [NASA High Resolution OMNI](https://omniweb.gsfc.nasa.gov/ow_min.html)
-data for a terrestrial event or calibrated ACE/DSCOVR measurements when a
-separate propagation analysis is intended.
+The supported event path is deliberately a single command. Do not download
+individual columns through the OMNIWeb form, merge tables, calculate an L1
+delay, or hand-edit timestamps. The checked-in tool requests one definitive
+NASA file, converts it, validates it, and writes every run-side setting.
 
-### 5.1 Decide what time and position the source represents
+### 5.1 NASA product and variables
 
-Before processing any values, record:
+The tool uses NASA CDAWeb/SPDF HAPI dataset
+[`OMNI_HRO2_1MIN`](https://cdaweb.gsfc.nasa.gov/hapi/info?id=OMNI_HRO2_1MIN),
+the definitive one-minute high-resolution OMNI product (DOI
+[`10.48322/mj0k-fq60`](https://doi.org/10.48322/mj0k-fq60)). Its timestamps
+have already been shifted to estimated arrival at the terrestrial bow-shock
+nose, as described in NASA's
+[high-resolution OMNI documentation](https://omniweb.gsfc.nasa.gov/html/HROdocum.html).
+Therefore **do not apply another ACE/DSCOVR L1-to-Earth shift**.
 
-1. data product and version;
-2. native cadence and time standard;
-3. coordinate frame for every vector;
-4. whether timestamps are raw spacecraft times or already propagated target
-   arrival times;
-5. position represented by the timestamps.
+The script requests exactly these NASA variables:
 
-High-resolution OMNI timestamps are already time shifted to an estimated
-arrival at the terrestrial bow-shock nose; NASA's
-[HRO construction and time-shifting documentation](https://omniweb.gsfc.nasa.gov/html/sc_merge_data1.html)
-states that its record times are target-arrival rather than observation times.
-Do not treat them as raw L1 times and propagate them a second time. For an
-already propagated product, choose a reference position consistent with its
-target convention, commonly near native `(0,0,0)`, and document the choice.
-For raw spacecraft data, use a physically consistent spacecraft/reference
-position and perform or retain the intended propagation exactly once.
+| NASA HAPI field | Frame/unit | GAMERA-OP output | Automatic conversion |
+|---|---|---|---|
+| `BX_GSE` | GSE, nT | `/Bx` | reverse X sign |
+| `BY_GSM`, `BZ_GSM` | GSM, nT | `/By`, `/Bz` | retain Y/Z signs |
+| `Vx`, `Vy`, `Vz` | GSE, km/s | `/Vx`, `/Vy`, `/Vz` | reverse X sign only |
+| `proton_density` | proton cm^-3 | `/D` | direct |
+| `T` | K | `/Temp` | direct |
 
-### 5.2 Select an event epoch
+GSE and GSM share the X axis, which makes the mixed magnetic selection above
+well defined. NASA fill values from the HAPI metadata are changed to missing
+values before interpolation. The script does not request OMNI `Pressure`:
+that field is dynamic/ram pressure, whereas solver `/P` means **thermal**
+pressure. Writing `/D` and `/Temp` lets the loader compute proton thermal
+pressure consistently.
 
-Store `/T` as seconds relative to a named UTC event epoch:
+### 5.2 Install the small Python toolchain once
+
+From `GAMERA-OP/nonorthogonal`, activate the environment created by
+[Local setup](LOCAL_SETUP.md), or make one now:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install --upgrade pip
+python3 -m pip install numpy h5py matplotlib
+```
+
+The downloader uses only Python's standard HTTPS client; no NASA account,
+browser export, `cdasws`, or SpacePy installation is required.
+
+### 5.3 Complete event example: St. Patrick's Day storm interval
+
+Run this one command from `GAMERA-OP/nonorthogonal`:
+
+```bash
+python3 scripts/solar_wind/fetch_nasa_omni_event.py \
+  --simulation-start 2015-03-17T20:10:00Z \
+  --duration-hours 3 \
+  --padding-minutes 60 \
+  --output run_inputs/st_patricks_2015/st_patricks_20150317_omni_1min.h5
+```
+
+That invocation performs the full workflow:
+
+1. requests `OMNI_HRO2_1MIN` once from NASA CDAWeb HAPI;
+2. adds the requested 60 minutes before and after the focused three-hour run;
+   for other events the default is 120 minutes;
+3. removes the documented source fill values;
+4. linearly fills missing runs up to the default 10-minute limit and rejects
+   it if any required field has a longer missing run;
+5. applies the release's native X-axis convention;
+6. writes `/T` in seconds relative to the requested simulation start;
+7. validates cadence, finiteness, density, temperature, native inflow, and
+   that padding exceeds the worst observed advection delay over 200 RE;
+8. creates the HDF5, run settings, QA plot, and checksummed provenance receipt.
+
+On success the last block begins with `NASA_OMNI_EVENT_READY`. The directory
+contains:
 
 ```text
-T = sample_UTC - event_zero_UTC.
+run_inputs/st_patricks_2015/
+├── st_patricks_20150317_omni_1min.h5          solver input
+├── st_patricks_20150317_omni_1min.wind.yaml   copy-ready YAML keys
+├── st_patricks_20150317_omni_1min.qa.png      converted-variable QA
+├── st_patricks_20150317_omni_1min.receipt.json
+└── raw/
+    ├── NASA_OMNI_HRO2_1MIN_..._UTC.csv        exact NASA response
+    └── NASA_OMNI_HRO2_1MIN_..._UTC.csv.source.json
 ```
 
-If solver time zero is not the event epoch, use
+This focused interval is used because the public one-minute product contains
+a long data outage earlier on 17 March; the tool rejects a full-day input
+instead of silently interpolating across it. The selected command has been
+run against NASA data: the largest required-field gap is 5 minutes, and the
+60-minute padding passes the observed-speed audit for the 200-RE domain.
 
-```text
-wind_time_offset =
-    (simulation_start_UTC - event_zero_UTC).total_seconds() / 63.71.
-```
+The raw CSV is the single download. Re-running the same time range uses that
+cache; add `--refresh` only when a deliberate new NASA retrieval is wanted.
+The receipt records the exact query URL, retrieval time, raw and generated
+SHA-256 hashes, maximum gap by variable, and interpolation count.
 
-Write both UTC values and the formula result into HDF5 attributes and the run
-receipt. Remember that a nonzero reference position and tilted front add a
-position-dependent ballistic delay, so the file must extend beyond the run on
-both sides.
+### 5.4 Run configuration: use the generated file, do not derive a shift
 
-### 5.3 Map and clean the variables
-
-For each record:
-
-1. replace documented source fill values with missing values;
-2. convert vectors into one documented scientific frame;
-3. apply the model-native X convention described in section 1;
-4. map proton density to `/D`;
-5. map proton temperature to `/Temp`, or compute a scientifically justified
-   **thermal** pressure for `/P`;
-6. remove duplicate timestamps and sort by increasing time;
-7. handle short gaps with a declared method and retain a quality mask;
-8. reject or explicitly segment long gaps rather than silently bridging them;
-9. add time padding required by the run and propagation delay.
-
-OMNI's commonly named `Flow Pressure` variable is solar-wind **dynamic/ram
-pressure**, as shown by NASA's
-[derived-parameter definition](https://omniweb.gsfc.nasa.gov/ftpbrowser/bow_derivation.html).
-It must not be written to `/P`. The MHD reader interprets `/P` as thermal
-pressure. For OMNI, the safer default is to write proton `/D` and `/Temp` and
-omit `/P`, allowing the loader to compute `n k_B T`.
-
-If the event workflow fits the divergence-compatible Lyon relation, store the
-fit as `/ByC`, `/BzC`, and `/Bx0` and retain the measured `/Bx` plus fit report
-for provenance. Otherwise omit the coefficients or set
-`wind_enforce_bx_relation: 0` to preserve measured `Bx`.
-
-### 5.4 Minimal event HDF5 writer
-
-After source-specific fill-value removal, frame conversion, and gap handling,
-export a clean CSV with this header:
-
-```text
-utc,D_cm3,Temp_K,Vx_source_kms,Vy_source_kms,Vz_source_kms,Bx_source_nT,By_source_nT,Bz_source_nT
-```
-
-The following writer converts the conventional source-X sign to the release's
-native convention and refuses non-finite, non-positive, duplicate, reversed,
-or longer-than-five-minute-gap input. Change `event_zero_utc`, the declared
-source frame, and the gap threshold for the actual study. It intentionally
-does not fetch data or conceal missing intervals; source-specific preprocessing
-and its quality masks remain part of the event provenance.
-
-```python
-import csv
-from datetime import datetime, timezone
-
-import h5py
-import numpy as np
-
-input_csv = "processed_event.csv"
-output_h5 = "event_wind.h5"
-event_zero_utc = datetime.fromisoformat("2015-03-17T00:00:00+00:00")
-max_gap_seconds = 300.0
-
-columns = {
-    "D": [], "Temp": [],
-    "Vx": [], "Vy": [], "Vz": [],
-    "Bx": [], "By": [], "Bz": [],
-}
-times = []
-
-with open(input_csv, newline="", encoding="utf-8") as stream:
-    for row in csv.DictReader(stream):
-        utc = datetime.fromisoformat(row["utc"].replace("Z", "+00:00"))
-        if utc.tzinfo is None:
-            raise ValueError("Every UTC value must include a timezone")
-        utc = utc.astimezone(timezone.utc)
-        times.append((utc - event_zero_utc).total_seconds())
-        columns["D"].append(float(row["D_cm3"]))
-        columns["Temp"].append(float(row["Temp_K"]))
-        # Established release mapping: native X=-source X; Y/Z unchanged.
-        columns["Vx"].append(-float(row["Vx_source_kms"]))
-        columns["Vy"].append(float(row["Vy_source_kms"]))
-        columns["Vz"].append(float(row["Vz_source_kms"]))
-        columns["Bx"].append(-float(row["Bx_source_nT"]))
-        columns["By"].append(float(row["By_source_nT"]))
-        columns["Bz"].append(float(row["Bz_source_nT"]))
-
-T = np.asarray(times, dtype=np.float64)
-data = {name: np.asarray(values, dtype=np.float64)
-        for name, values in columns.items()}
-
-if T.size == 0 or any(values.shape != T.shape for values in data.values()):
-    raise ValueError("Empty or unequal-length event arrays")
-if not np.all(np.isfinite(T)) or not all(np.all(np.isfinite(values))
-                                                for values in data.values()):
-    raise ValueError("Non-finite event value")
-if not np.all(np.diff(T) > 0.0):
-    raise ValueError("UTC samples must be strictly increasing and unique")
-if T.size > 1 and np.max(np.diff(T)) > max_gap_seconds:
-    raise ValueError("Event contains a gap longer than the accepted threshold")
-if not np.all(data["D"] > 0.0) or not np.all(data["Temp"] > 0.0):
-    raise ValueError("Density and temperature must be positive")
-if not np.all(data["Vx"] > 0.0):
-    raise ValueError("Expected positive model-native solar-wind Vx")
-
-with h5py.File(output_h5, "x") as h5:
-    h5.create_dataset("T", data=T)
-    for name, values in data.items():
-        h5.create_dataset(name, data=values)
-    h5.attrs["event_zero_utc"] = event_zero_utc.isoformat()
-    h5.attrs["source_frame"] = "REPLACE_WITH_VERIFIED_SOURCE_FRAME"
-    h5.attrs["coordinate_mapping"] = "native X=-source X; Y/Z unchanged"
-    h5.attrs["input_csv"] = input_csv
-    h5.attrs["velocity_unit"] = "km/s"
-    h5.attrs["magnetic_unit"] = "nT"
-    h5.attrs["density_unit"] = "proton cm^-3"
-    h5.attrs["temperature_unit"] = "K"
-
-print(output_h5)
-```
-
-For a real production input, also store or archive the raw-data checksum,
-retrieval URL/time, product version, fill-value rules, interpolation method,
-quality masks, and the checksum of this generated HDF5 file. If the source CSV
-is already in model-native coordinates, remove the two X sign changes and
-record that fact instead of applying the mapping twice.
-
-### 5.5 Event YAML example
-
-The following assumes that `/T` is relative to the chosen event epoch, the
-data are in physical units, velocities are km/s, and the source has been
-prepared at the stated model-native reference position:
+Open the generated `.wind.yaml` and copy its keys into the science
+`config.yaml`. For this example it contains:
 
 ```yaml
 wind_file: st_patricks_20150317_omni_1min.h5
@@ -413,14 +346,52 @@ wind_interpolation: linear
 wind_reference_x: 0.0
 wind_reference_y: 0.0
 wind_reference_z: 0.0
-wind_time_offset: -70.63255375922147
+wind_time_offset: 0.0
 wind_enforce_bx_relation: 0
 ```
 
-Here the example offset is `-4500 s / 63.71 s`; it is illustrative and must
-be recomputed from the actual event and simulation epochs. Use `linear`
-interpolation for normal time-series observations. Never copy the numeric
-offset or reference point to another event without re-deriving them.
+Keep the HDF5 beside that `config.yaml`, or change only `wind_file` to its
+path relative to the config. The zeros are not placeholders:
+
+- OMNI time is already referenced to bow-shock arrival, so the reference is
+  native `(0,0,0)`;
+- `/T=0` is exactly the requested simulation start, so the code-time offset
+  is exactly zero;
+- the measured OMNI `Bx` is retained rather than replaced by a fitted planar
+  relation.
+
+No student should calculate `4500/63.71`, guess a monitor position, or shift
+the CSV in a spreadsheet. The model still applies its documented
+position-dependent propagation from the bow-shock reference to each boundary
+or grid point (section 6).
+
+### 5.5 Use another event
+
+Only change the UTC start, stop/duration, and output name:
+
+```bash
+python3 scripts/solar_wind/fetch_nasa_omni_event.py \
+  --simulation-start START_UTC \
+  --simulation-stop STOP_UTC \
+  --output run_inputs/EVENT_NAME/EVENT_NAME_omni_1min.h5
+```
+
+Useful policy options are `--padding-minutes`, `--max-gap-minutes`, and
+`--overwrite`; inspect all choices with `--help`. A new event can legitimately
+fail if NASA has a longer outage than the declared policy or if its padding is
+too short for the observed speed and 200-RE domain. That is a data-quality
+decision, not a reason to bypass the checks. A network-free tool check is
+available as:
+
+```bash
+python3 scripts/solar_wind/fetch_nasa_omni_event.py --self-test
+```
+
+If a collaborator already downloaded the exact headerless HAPI CSV, pass it
+with `--raw-csv FILE`; the same validation and conversion path is used without
+a second download. Raw ACE or DSCOVR spacecraft data are intentionally outside
+this lazy event path because they require a separately justified propagation
+analysis. Use them only when L1 propagation itself is part of the research.
 
 ## 6. Propagation performed by the model
 
@@ -450,7 +421,15 @@ coverage; use sufficient input padding and audit the actual delay range.
 
 ## 7. Pre-run validation
 
-Inspect the structure and values before submitting an expensive run:
+For a NASA event, first open the generated `.qa.png` and
+`.receipt.json`. Confirm that the blue-shaded simulation interval has the
+expected IMF, velocity, density, and temperature, and that the receipt reports
+an acceptable interpolation count. The one-command tool has already checked
+the HDF5 schema, 60-second cadence, all primary values, sign mapping, coverage,
+and source hashes.
+
+An independent command-line inspection before an expensive run remains good
+practice:
 
 ```bash
 h5dump -n upstream_input.h5
@@ -458,8 +437,7 @@ h5dump -d /T -d /D -d /Vx -d /Bx -d /By -d /Bz upstream_input.h5
 sha256sum upstream_input.h5
 ```
 
-On macOS, `shasum -a 256 upstream_input.h5` is equivalent. Also make a QA
-plot of every primary variable versus UTC and verify:
+On macOS, `shasum -a 256 upstream_input.h5` is equivalent. Verify:
 
 - one-dimensional equal-length arrays;
 - finite values and strictly increasing time;
@@ -467,7 +445,7 @@ plot of every primary variable versus UTC and verify:
 - expected native `Vx` sign and no zero `Vx`;
 - expected IMF signs after coordinate conversion;
 - no source fill values or unexplained discontinuities;
-- gap masks and interpolation policy are visible;
+- gap masks and interpolation policy agree with the generated QA/receipt;
 - coverage includes the complete run plus propagation padding;
 - YAML path, units, interpolation, reference, and code-time offset are correct;
 - coefficient/relation choice is explicit;
@@ -487,7 +465,11 @@ before authorizing a long production run.
 - **Offset entered in seconds:** `wind_time_offset` is code time; divide
   physical seconds by `63.71` for the supplied normalization.
 - **Double propagation:** using already propagated OMNI timestamps as though
-  they were raw L1 observations.
+  they were raw L1 observations. The checked-in NASA tool already prevents
+  this; do not alter its generated reference or offset.
+- **Manual NASA table assembly:** downloading eight separate columns, joining
+  them, or shifting them in a spreadsheet bypasses the checked fill-value,
+  frame, gap, and provenance path. Use `fetch_nasa_omni_event.py` once.
 - **Hidden endpoint clamping:** a run appears to work but spends part of its
   interval at a frozen first or last sample.
 - **Wrong interpolation:** `step` is appropriate for a designed discontinuous

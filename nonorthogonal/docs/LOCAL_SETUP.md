@@ -7,12 +7,9 @@ below contain no prompt character.
 ## 1. Download the repository
 
 ```bash
-git clone https://github.com/HKU-Space-Gang/GAMERA-OP.git
+git clone https://github.com/ijmhd/GAMERA-OP.git
 cd GAMERA-OP/nonorthogonal
 ```
-
-Until the integration pull request is merged, replace the second command by
-checking out the PR branch specified in that pull request.
 
 ## 2. Install compilers and libraries
 
@@ -102,12 +99,13 @@ magnetosphere simulation.
 
 ## 6. Configure the solar wind
 
-The supplied smoke case uses the checked-in idealized solar-wind file. Before
-creating a new idealized schedule or an observed-event input, follow
-[Solar-wind input](SOLAR_WIND.md). It defines the required HDF5 datasets,
-physical units, model-native signs, time-offset conversion and event-data
-quality checks. In particular, native inflow has positive `Vx`, `/P` is
-thermal rather than dynamic pressure, and `wind_time_offset` is in code time.
+The supplied smoke case uses the checked-in idealized solar-wind file. For an
+observed event, follow the one-command NASA example in
+[Solar-wind input](SOLAR_WIND.md): give it simulation UTC and an output name,
+and it downloads one definitive OMNI file and creates validated HDF5, YAML,
+QA, and provenance products. Do not manually merge NASA columns or calculate
+an L1 shift. The same guide also documents custom idealized schedules,
+physical units, model-native signs, and advanced propagation settings.
 
 ## 7. Choose the next grid
 

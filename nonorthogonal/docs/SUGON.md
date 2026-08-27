@@ -8,7 +8,7 @@ rank.
 
 ```bash
 cd /public/home/YOUR_USER
-git clone https://github.com/HKU-Space-Gang/GAMERA-OP.git
+git clone https://github.com/ijmhd/GAMERA-OP.git
 cd GAMERA-OP/nonorthogonal/examples/earth_magnetosphere/sugon_128
 ```
 
@@ -114,9 +114,11 @@ coordinate conventions are specified in
 Make a copy of `config.yaml` in a new run directory and record every change.
 Solar-wind history and runtime are normal science inputs. Use
 [Solar-wind input](SOLAR_WIND.md) to construct and validate either an
-idealized schedule or an observed event before submission. It includes the
-exact HDF5 schema, native coordinates, physical units, time alignment,
-propagation reference and event quality-control checklist. Do not change the
+idealized schedule or an observed event before submission. The supported NASA
+event workflow is one Python command: it makes the raw download, HDF5, exact
+YAML fragment, QA plot, and checksum receipt, so no manual time shift is
+needed. Copy the resulting HDF5 beside the run `config.yaml` and use the
+generated `.wind.yaml` settings. Do not change the
 radial map, Yin-Yang interface, sparse-overset or MI solver build switches in
 an A/B science comparison unless the numerical change itself is the research
 question.
